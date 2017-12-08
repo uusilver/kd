@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:shrinkColumns="0,1,2,3">
+
+        <TableRow>
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal" />
+
+            <TextView
+                android:id="@+id/txtName"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:text="444444444444"
+                android:textColor="#333"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="允许启动时间" />
+
+            <Spinner
+                android:id="@+id/start_time_hour"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:entries="@array/time_hour"
+                android:spinnerMode="dialog"></Spinner>
+
+            <TextView android:text="点" />
+
+            <Spinner
+                android:id="@+id/start_time_minute"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:entries="@array/time_minute"
+                android:spinnerMode="dialog"></Spinner>
+
+            <TextView android:text="分" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView android:text="程序关闭时间" />
+
+            <Spinner
+                android:id="@+id/end_time_hour"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:entries="@array/time_hour"
+                android:spinnerMode="dialog"></Spinner>
+
+            <TextView android:text="点" />
+
+            <Spinner
+                android:id="@+id/end_time_minute"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:entries="@array/time_minute"
+                android:spinnerMode="dialog"></Spinner>
+
+            <TextView android:text="分" />
+
+        </TableRow>
+
+        <TableRow>
+            <TextView android:text="程序开关" />
+            <Switch
+                android:id="@+id/app_switch"
+                android:textOff="开"
+                android:textOn="关"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/delete_app"
+                android:text="@string/delete_app"
+                android:layout_width="wrap_content"
+                />
+        </TableRow>
+
+
+    </TableLayout>
+</LinearLayout>

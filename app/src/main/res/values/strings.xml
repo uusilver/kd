@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">风筝桌面</string>
+    <string name="mic">录音机</string>
+    <string name="parent_control_label">家长控制</string>
+    <string name="avaiable">可用</string>
+    <string name="unavaiable">不可用</string>
+    <string name="alert">Alert Button</string>
+    <string name="alert_message">You Clicked Alert</string>
+    <string name="title_activity_quiz_activicy">QuizActivicy</string>
+    <string name="telephone">电话</string>
+    <string name="input_password_title">请输入密码</string>
+    <string name="confirm_button">确认</string>
+    <string name="cancel_button">取消</string>
+    <string name="password_wrong">密码错误</string>
+    <string name="loading">读取中...</string>
+    <string name="pls_wait">请等待</string>
+    <string name="init_setting_title">KidUI 初始化设置</string>
+    <string name="app_box_title">应用盒子</string>
+    <string name="reset_pwd_title">重置密码</string>
+    <string name="reset_pwd_question_title">密码重置问题</string>
+    <string name="delete_app">卸载</string>
+    <string name="app_running_not_in_time">程序不在可运行时间段</string>
+    <array name="time_hour">
+        <item>8:00</item>
+        <item>9:00</item>
+        <item>10:00</item>
+        <item>11:00</item>
+        <item>12:00</item>
+        <item>13:00</item>
+        <item>14:00</item>
+        <item>15:00</item>
+        <item>16:00</item>
+        <item>17:00</item>
+        <item>18:00</item>
+        <item>19:00</item>
+        <item>20:00</item>
+        <item>21:00</item>
+        <item>22:00</item>
+    </array>
+    <string-array name="time_minute">
+        <item>00</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+    </string-array>
+</resources>
