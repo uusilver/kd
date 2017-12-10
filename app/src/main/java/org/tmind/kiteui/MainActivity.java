@@ -28,6 +28,8 @@ import org.tmind.kiteui.model.MertoItemView;
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.TimeUtils;
 
+import java.util.Date;
+
 /**
  * @ClassName: MertoActivity
  * @Description: Kid UI 主页面
@@ -53,6 +55,9 @@ public class MainActivity extends Activity {
     private final static String applicationControlTable = "application_control_table";
     private final static String resetPasswordTable = "reset_password_table";
     private final static String emergencePhoneTable = "emergence_phone_table";
+    private final static String passwordControlTable = "password_control_table";
+
+    private final static int MAX_WRONG_PASSWORD_TIMES = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -297,14 +302,35 @@ public class MainActivity extends Activity {
                         String savedParentPassword = getParentPassword();
                         if(savedParentPassword!=null && inputPassword.equals(savedParentPassword)){
                             route2Activity(ParentControlActivity.class);
-                        }else if(("@123@").equals(inputPassword)){
-                            route2Activity(ResetPwdQuestionActivity.class); //reset password page
                         }
                         else{
-                            Toast.makeText(getApplicationContext(), R.string.password_wrong,Toast.LENGTH_SHORT).show();
+                            String[] result = getPasswordWrongTimes();
+                            int wrongTimes = Integer.valueOf(result[0]);
+                            if(result[1]!=null){
+                                long wrongDateStr = Long.valueOf(result[1]);
+                                if((TimeUtils.isYeaterday(new Date(wrongDateStr), new Date())!=0) && wrongTimes>=3){
+                                    Toast.makeText(getApplicationContext(), R.string.password_wrong_over_time, Toast.LENGTH_LONG).show();
+                                }
+                                else{
+                                    int currentWrongTimes = wrongTimes+1;
+                                    int leftWrongTimes = MAX_WRONG_PASSWORD_TIMES-currentWrongTimes;
+                                    //更新数据库密码输入错误次数
+                                    updatePasswordWrongTimes(String.valueOf(currentWrongTimes));
+                                    String msg = getResources().getString(R.string.password_wrong);
+                                    String showMsg = String.format(msg, currentWrongTimes, leftWrongTimes);
+                                    Toast.makeText(getApplicationContext(), showMsg,Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
                     }
                 });
+        //重置密码
+        builder.setNeutralButton(R.string.forget_password_title, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                route2Activity(ResetPwdQuestionActivity.class);
+            }
+        });
         builder.show();
     }
 
@@ -342,9 +368,19 @@ public class MainActivity extends Activity {
     private boolean createTableIfNotExist(){
 
 //        dropDb(db);
+
+        //家长密码表
         if(!checkIfTableExist(parentControlPasswordTable)){
             db.execSQL("create table "+parentControlPasswordTable+"(_id integer primary key autoincrement, parent_password varchar(50), password_type varchar(20))");
         }
+        //
+        if(!checkIfTableExist(passwordControlTable)){
+            db.execSQL("create table "+passwordControlTable+"(_id integer primary key autoincrement, wrong_times varchar(50), password_type varchar(20), password_date_time varchar(100))");
+            //初始化表
+            db.execSQL("insert into "+passwordControlTable+" (wrong_times, password_type) values ('0','pwd')"); //输入密码错误的次数
+            db.execSQL("insert into "+passwordControlTable+" (wrong_times, password_type) values ('0','rst')"); //输入忘记密码的提示问题的错误次数
+        }
+        //家长控制表
         if(!checkIfTableExist(applicationControlTable))
         {
             db.execSQL("create table "+applicationControlTable+"(_id integer primary key autoincrement, " +
@@ -355,10 +391,11 @@ public class MainActivity extends Activity {
                     "end_time_hour varchar(50), " +
                     "end_time_minute varchar(50))");
         }
+        //重置密码
         if(!checkIfTableExist(resetPasswordTable)){
             db.execSQL("create table "+resetPasswordTable+"(_id integer primary key autoincrement, question varchar(50), answer varchar(50))");
         }
-
+        //紧急联系人电话
         if(!checkIfTableExist(emergencePhoneTable)){
             db.execSQL("create table "+emergencePhoneTable+"(_id integer primary key autoincrement, phone_no varchar(50))");
         }
@@ -409,5 +446,20 @@ public class MainActivity extends Activity {
         }
     }
 
+    private String[] getPasswordWrongTimes(){
+        String wrongTimeInDb = null;
+        String wrongDate = null;
+        Cursor cursor = db.rawQuery("select wrong_times, password_date_time from "+passwordControlTable+" where password_type='pwd'",null);
+        if(cursor.moveToFirst()){
+            wrongTimeInDb = cursor.getString(0);
+            wrongDate = cursor.getString(1);
+        }
+
+        return new String[]{wrongTimeInDb, wrongDate};
+    }
+
+    private void updatePasswordWrongTimes(String times){
+        db.execSQL("update "+passwordControlTable+" set wrong_times='"+times+"', password_date_time='"+new Date().getTime()+"'");
+    }
 
 }

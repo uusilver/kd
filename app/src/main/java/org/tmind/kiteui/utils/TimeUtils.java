@@ -1,7 +1,9 @@
 package org.tmind.kiteui.utils;
 
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by fan on 2016/6/23.
@@ -38,6 +40,29 @@ public class TimeUtils {
     public static String  getCurrentTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         return sdf.format(System.currentTimeMillis());
+    }
+
+    public static int isYeaterday(Date oldTime, Date newTime){
+        if (newTime == null) {
+            newTime = new Date();
+        }
+        //将下面的 理解成  yyyy-MM-dd 00：00：00 更好理解点
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String todayStr = format.format(newTime);
+        Date today = null;
+        try {
+            today = format.parse(todayStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //昨天 86400000=24*60*60*1000 一天
+        if ((today.getTime() - oldTime.getTime()) > 0 && (today.getTime() - oldTime.getTime()) <= 86400000) {
+            return 0;
+        } else if ((today.getTime() - oldTime.getTime()) <= 0) { //至少是今天
+            return -1;
+        } else { //至少是前天
+            return 1;
+        }
     }
 
 
