@@ -30,7 +30,7 @@
         android:maxLength="25"
         android:id="@+id/resetpwd_answer"
         android:layout_below="@+id/resetpwd_question"
-        android:hint="请输入您的密码重置问题的答案"
+        android:hint="@string/reset_pwd_question_answer_hint"
         android:layout_alignLeft="@+id/resetpwd_edit_pwd_new"
         android:layout_alignStart="@+id/resetpwd_edit_pwd_new"
         android:layout_alignRight="@+id/resetpwd_edit_pwd_new"

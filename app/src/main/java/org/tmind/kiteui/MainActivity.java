@@ -301,6 +301,7 @@ public class MainActivity extends Activity {
                         //获取密码
                         String savedParentPassword = getParentPassword();
                         if(savedParentPassword!=null && inputPassword.equals(savedParentPassword)){
+                            cleanPasswordWrongTimesTable();
                             route2Activity(ParentControlActivity.class);
                         }
                         else{
@@ -377,8 +378,8 @@ public class MainActivity extends Activity {
         if(!checkIfTableExist(passwordControlTable)){
             db.execSQL("create table "+passwordControlTable+"(_id integer primary key autoincrement, wrong_times varchar(50), password_type varchar(20), password_date_time varchar(100))");
             //初始化表
-            db.execSQL("insert into "+passwordControlTable+" (wrong_times, password_type) values ('0','pwd')"); //输入密码错误的次数
-            db.execSQL("insert into "+passwordControlTable+" (wrong_times, password_type) values ('0','rst')"); //输入忘记密码的提示问题的错误次数
+            db.execSQL("insert into "+passwordControlTable+" (wrong_times, password_type, password_date_time) values ('0','pwd','"+new Date().getTime()+"')"); //输入密码错误的次数
+            db.execSQL("insert into "+passwordControlTable+" (wrong_times, password_type, password_date_time) values ('0','rst','"+new Date().getTime()+"')"); //输入忘记密码的提示问题的错误次数
         }
         //家长控制表
         if(!checkIfTableExist(applicationControlTable))
@@ -459,7 +460,11 @@ public class MainActivity extends Activity {
     }
 
     private void updatePasswordWrongTimes(String times){
-        db.execSQL("update "+passwordControlTable+" set wrong_times='"+times+"', password_date_time='"+new Date().getTime()+"'");
+        db.execSQL("update "+passwordControlTable+" set wrong_times='"+times+"', password_date_time='"+new Date().getTime()+"' where password_type='pwd'");
+    }
+
+    private void cleanPasswordWrongTimesTable(){
+        db.execSQL("update "+passwordControlTable+" set wrong_times='0', password_date_time='"+new Date().getTime()+"' where password_type='pwd'");
     }
 
 }
