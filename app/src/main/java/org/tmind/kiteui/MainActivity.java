@@ -139,10 +139,16 @@ public class MainActivity extends Activity {
         });
         //求助
         emergenceHelpItem.setIcon(R.drawable.kid_ui_help);
-        emergenceHelpItem.setText("求助");
+        emergenceHelpItem.setText("一键呼救");
         emergenceHelpItem.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), R.string.press_long_click, Toast.LENGTH_LONG).show();
+            }
+        });
+        emergenceHelpItem.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
                 //TODO send emergence information to remote server
                 //TODO information format telno+imei+time+location
                 String locationStr = getLocationInfo();
@@ -153,6 +159,7 @@ public class MainActivity extends Activity {
                 Log.d(TAG,stringKeepedInRemoteServer);
                 //TODO get setted help number from SQLite
                 call(getEmergencePhoneNo(), true);
+                return true;
             }
         });
         //图库
