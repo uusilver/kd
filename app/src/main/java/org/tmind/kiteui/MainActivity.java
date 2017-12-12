@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import org.tmind.kiteui.model.MertoItemView;
 import org.tmind.kiteui.utils.DBHelper;
+import org.tmind.kiteui.utils.HttpUtils;
 import org.tmind.kiteui.utils.TimeUtils;
 
 import java.util.Date;
@@ -152,13 +153,16 @@ public class MainActivity extends Activity {
                 //TODO send emergence information to remote server
                 //TODO information format telno+imei+time+location
                 String locationStr = getLocationInfo();
-                String timeStr = TimeUtils.getCurrentTime();
+                String timeStr = String.valueOf(new Date().getTime());
                 String telnoPlusIMEI = getTelNoPlusIMEI();
-                String stringKeepedInRemoteServer = telnoPlusIMEI+"+"+timeStr+"+"+locationStr;
+                String emergenceCallNo = getEmergencePhoneNo();
+                String stringKeepedInRemoteServer = telnoPlusIMEI+"+"+locationStr+"+"+emergenceCallNo+"+"+timeStr;
+                String url = "http://106.14.70.75:8004/bee/rest/insertHelpInfo/"+stringKeepedInRemoteServer;
+                new HttpUtils().execute(url);
                 //TODO send 2 server
                 Log.d(TAG,stringKeepedInRemoteServer);
                 //TODO get setted help number from SQLite
-                call(getEmergencePhoneNo(), true);
+                call(emergenceCallNo, true);
                 return true;
             }
         });
@@ -277,8 +281,8 @@ public class MainActivity extends Activity {
             Log.w(TAG, e.getMessage());
             return null;
         }
-        String locationStr = "维度：" + location.getLatitude() +"+"
-                + "经度：" + location.getLongitude();
+        //lng+lat
+        String locationStr = location.getLongitude() +"+"+location.getLatitude();
         return locationStr;
     }
 
