@@ -12,9 +12,10 @@ import java.util.Map;
 
 /**
  * Created by vali on 12/12/2017.
+ * This is a AsyncTask to execute time consuming Http services
  */
 
-public class HttpUtils extends AsyncTask<String, String, String> {
+public class AyncHttpTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... params) {

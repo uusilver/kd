@@ -18,6 +18,7 @@
         android:ems="10"
         android:id="@+id/resetpwd_edit_pwd_old"
         android:hint="请输入您的密码"
+        android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         android:layout_below="@+id/resetpwd_answer"
         android:layout_alignRight="@+id/resetpwd_question"
         android:layout_alignEnd="@+id/resetpwd_question"
@@ -31,9 +32,17 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/resetpwd_edit_pwd_new"
+        android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         android:layout_below="@+id/resetpwd_edit_pwd_old"
         android:layout_centerHorizontal="true"
         android:hint="请确认您的密码" />
+
+    <CheckBox
+        android:id="@+id/show_pwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/resetpwd_edit_pwd_new"
+        android:text="显示密码"/>
 
     <EditText
         android:drawableLeft="@android:drawable/stat_sys_phone_call"
@@ -42,7 +51,7 @@
         android:inputType="phone"
         android:ems="10"
         android:id="@+id/emergence_call_no"
-        android:layout_below="@+id/resetpwd_edit_pwd_new"
+        android:layout_below="@+id/show_pwd"
         android:layout_centerHorizontal="true"
         android:hint="请输入紧急联系电话" />
 

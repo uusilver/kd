@@ -26,7 +26,7 @@ import android.widget.Toast;
 
 import org.tmind.kiteui.model.MertoItemView;
 import org.tmind.kiteui.utils.DBHelper;
-import org.tmind.kiteui.utils.HttpUtils;
+import org.tmind.kiteui.utils.AyncHttpTask;
 import org.tmind.kiteui.utils.TimeUtils;
 
 import java.util.Date;
@@ -157,8 +157,9 @@ public class MainActivity extends Activity {
                 String telnoPlusIMEI = getTelNoPlusIMEI();
                 String emergenceCallNo = getEmergencePhoneNo();
                 String stringKeepedInRemoteServer = telnoPlusIMEI+"+"+locationStr+"+"+emergenceCallNo+"+"+timeStr;
-                String url = "http://106.14.70.75:8004/bee/rest/insertHelpInfo/"+stringKeepedInRemoteServer;
-                new HttpUtils().execute(url);
+                String remoteServerAddr = getResources().getString(R.string.remote_server_address);
+                String url = remoteServerAddr+"/rest/insertHelpInfo/"+stringKeepedInRemoteServer;
+                new AyncHttpTask().execute(url);
                 //TODO send 2 server
                 Log.d(TAG,stringKeepedInRemoteServer);
                 //TODO get setted help number from SQLite

@@ -5,12 +5,17 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import org.tmind.kiteui.utils.DBHelper;
+import org.tmind.kiteui.utils.AyncHttpTask;
 
 public class InitialSettingActivity extends AppCompatActivity {
 
@@ -21,6 +26,7 @@ public class InitialSettingActivity extends AppCompatActivity {
     private EditText oldPwd;
     private EditText newPwd;
     private EditText emergencePhoneNo;
+    private CheckBox showPwdCheckBox;
 
     private Button confirmBtn;
     private Button cancelBtn;
@@ -36,6 +42,11 @@ public class InitialSettingActivity extends AppCompatActivity {
         oldPwd = (EditText)findViewById(R.id.resetpwd_edit_pwd_old);
         newPwd = (EditText)findViewById(R.id.resetpwd_edit_pwd_new);
         emergencePhoneNo = (EditText)findViewById(R.id.emergence_call_no);
+
+        showPwdCheckBox = (CheckBox)findViewById(R.id.show_pwd);
+
+        showPwdCheckBox.setOnClickListener(new CheckOnShowPwdListener());
+
 
         confirmBtn = (Button)findViewById(R.id.register_btn_sure);
         cancelBtn = (Button)findViewById(R.id.register_btn_cancel);
@@ -88,7 +99,13 @@ public class InitialSettingActivity extends AppCompatActivity {
                 Toast.makeText(context,"请输入正确的手机号码", Toast.LENGTH_SHORT).show();
                 return;
             }
-
+            //imei
+            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String imei = tm.getSimSerialNumber();
+            String send2RemoteStr = imei+"+"+emergencePhoneNoStr+"+"+newPwdStr;
+            String remoteServerAddr = getResources().getString(R.string.remote_server_address);
+            String url = remoteServerAddr+"/rest/regist/"+send2RemoteStr;
+            new AyncHttpTask().execute(url);
             //
             SQLiteDatabase db = new DBHelper(context).getDbInstance();
             //insert
@@ -115,6 +132,20 @@ public class InitialSettingActivity extends AppCompatActivity {
             resetPwdAnswer.setText("");
             oldPwd.setText("");
             newPwd.setText("");
+        }
+    }
+
+    private class CheckOnShowPwdListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            if(showPwdCheckBox.isChecked()){
+                newPwd.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                oldPwd.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            }else {
+                newPwd.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                oldPwd.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
         }
     }
 }
