@@ -2,7 +2,9 @@ package org.tmind.kiteui;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -20,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -33,6 +36,7 @@ import org.tmind.kiteui.utils.TimeUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -320,6 +324,52 @@ public class MicRecordActivity extends Activity implements View.OnClickListener 
                 TextView txt = (TextView) view.findViewById(R.id.txtName);
                 final CheckBox ceb = (CheckBox) view.findViewById(R.id.check);
                 txt.setText(array.get(position));
+                //rename button
+                Button renameMic = (Button)view.findViewById(R.id.rename_mic_record);
+                //popup windows
+                renameMic.setVisibility(visiblecheck.get(position));
+                renameMic.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final EditText inputServer = new EditText(context);
+                        inputServer.setFocusable(true);
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setTitle(getString(R.string.mic_rename_file_name))
+                                .setIcon(R.drawable.kite_ui_rename)
+                                .setView(inputServer).setNegativeButton(
+                                getString(R.string.cancel_button), null);
+                        builder.setPositiveButton(getString(R.string.confirm_button),
+                                new DialogInterface.OnClickListener() {
+
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String inputFileName = inputServer.getText().toString();
+                                        //TODO password corrent to route
+                                        //获取密码
+                                        File oldFile = new File(FILE_PATH+array.get(position));
+                                        File newFile= new File(FILE_PATH+inputFileName);
+                                        if(!oldFile.exists()){
+                                           Toast.makeText(context,R.string.mic_rename_file_do_not_exist,Toast.LENGTH_LONG).show();
+                                        }
+                                        if(newFile.exists()) {//若在该目录下已经有一个文件和新文件名相同，则不允许重命名
+                                            Toast.makeText(context, R.string.mic_rename_file_new_exist, Toast.LENGTH_LONG).show();
+                                        }else{
+                                            oldFile.renameTo(newFile);
+                                            Toast.makeText(context, R.string.mic_rename_file_successful, Toast.LENGTH_LONG).show();
+                                            array.set(position,inputFileName);
+                                            selectid.clear();
+                                            micListAdapter = new MicListAdapter(context, txtcount);
+                                            listview.setAdapter(micListAdapter);
+                                            layout.setVisibility(View.INVISIBLE);
+                                        }
+
+                                    }
+                                });
+                        builder.show();
+                    }
+                });
+
+                //checkbox control
                 ceb.setChecked(ischeck.get(position));
                 ceb.setVisibility(visiblecheck.get(position));
                 view.setOnLongClickListener(new Onlongclick());
