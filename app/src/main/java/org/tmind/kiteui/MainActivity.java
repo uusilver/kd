@@ -27,6 +27,7 @@ import android.widget.Toast;
 import org.tmind.kiteui.model.MertoItemView;
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.AyncHttpTask;
+import org.tmind.kiteui.utils.PhoneUtil;
 import org.tmind.kiteui.utils.TimeUtils;
 
 import java.util.Date;
@@ -61,17 +62,20 @@ public class MainActivity extends Activity {
 
     private final static int MAX_WRONG_PASSWORD_TIMES = 3;
 
+    private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        context = this;
         //检查数据库 & 表
         db = new DBHelper(this).getDbInstance();
         //检查表是否存在，不存在则创建，存在则返回
         createTableIfNotExist();
         //进行初始化设置
-        if(ifNeedGotoInitActivity()) {
+        if (ifNeedGotoInitActivity()) {
             route2Activity(InitialSettingActivity.class);
         }
         //初始化整个UI
@@ -127,7 +131,7 @@ public class MainActivity extends Activity {
         photoItem.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-               photoAndVideo(1);
+                photoAndVideo(1);
             }
         });
         //录音机
@@ -153,28 +157,21 @@ public class MainActivity extends Activity {
             public boolean onLongClick(View v) {
                 //TODO send emergence information to remote server
                 //TODO information format telno+imei+time+location
-                String locationStr = null;
-                String timeStr = null;
-                String telnoPlusIMEI = null;
+                String locationStr = PhoneUtil.getLocationInfo(locationManager, locationListener);
+                String timeStr = String.valueOf(new Date().getTime());
+                ;
+                String telnoPlusIMEI = PhoneUtil.getPhoneNo(context) + "+" + PhoneUtil.getImei(context);
                 String emergenceCallNo = null;
-                try{
-                     locationStr = getLocationInfo();
-                     timeStr = String.valueOf(new Date().getTime());
-                     telnoPlusIMEI = getTelNoPlusIMEI();
-                }catch (Exception e){
-                    Log.e(TAG, e.getMessage());
-                }finally {
-                    emergenceCallNo = getEmergencePhoneNo();
-                    String stringKeepedInRemoteServer = telnoPlusIMEI+"+"+locationStr+"+"+emergenceCallNo+"+"+timeStr;
-                    String remoteServerAddr = getResources().getString(R.string.remote_server_address);
-                    String url = remoteServerAddr+"/rest/insertHelpInfo/"+stringKeepedInRemoteServer;
-                    new AyncHttpTask().execute(url);
-                    //TODO send 2 server
-                    Log.d(TAG,stringKeepedInRemoteServer);
-                    //TODO get setted help number from SQLite
-                    call(emergenceCallNo, true);
-                    return true;
-                }
+                emergenceCallNo = getEmergencePhoneNo();
+                String stringKeepedInRemoteServer = telnoPlusIMEI + "+" + locationStr + "+" + emergenceCallNo + "+" + timeStr;
+                String remoteServerAddr = getResources().getString(R.string.remote_server_address);
+                String url = remoteServerAddr + "/rest/insertHelpInfo/" + stringKeepedInRemoteServer;
+                new AyncHttpTask().execute(url);
+                //TODO send 2 server
+                Log.d(TAG, stringKeepedInRemoteServer);
+                //TODO get setted help number from SQLite
+                call(emergenceCallNo, true);
+                return true;
 
             }
         });
@@ -210,32 +207,35 @@ public class MainActivity extends Activity {
         });
     }
 
-    private String getEmergencePhoneNo(){
-        Cursor cursor = db.rawQuery("select phone_no from "+emergencePhoneTable+"",null);
-        if(cursor.moveToFirst()){
+    private String getEmergencePhoneNo() {
+        Cursor cursor = db.rawQuery("select phone_no from " + emergencePhoneTable + "", null);
+        if (cursor.moveToFirst()) {
             return cursor.getString(0);
-        }else {
+        } else {
             return null;
         }
     }
+
     /**
      * 拨打电话
+     *
      * @param phone
      */
     private void call(String phone, boolean emergenceFlag) {
-        Intent intent=new Intent();
-        if(emergenceFlag){
+        Intent intent = new Intent();
+        if (emergenceFlag) {
             intent.setAction(Intent.ACTION_CALL);
-        }else{
+        } else {
             intent.setAction(Intent.ACTION_DIAL);
         }
-        intent.setData(Uri.parse("tel:"+phone));
+        intent.setData(Uri.parse("tel:" + phone));
         //开始这个企图
         startActivity(intent);
     }
 
     /**
      * 发送短信
+     *
      * @param smsBody
      */
     private void sendSMS(String smsBody) {
@@ -250,11 +250,11 @@ public class MainActivity extends Activity {
     /**
      * 拍照/摄像
      */
-    private void photoAndVideo(int code){
+    private void photoAndVideo(int code) {
         Intent intent = null;
-        if(code == 1) {
+        if (code == 1) {
             intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        }else if(code == 2){
+        } else if (code == 2) {
             intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         }
         startActivity(intent);
@@ -263,12 +263,12 @@ public class MainActivity extends Activity {
     /**
      * 跳转到Activity
      */
-    private void route2Activity(Class<?> activityClass){
+    private void route2Activity(Class<?> activityClass) {
         Intent intent = new Intent(MainActivity.this, activityClass);
         startActivity(intent);
     }
 
-    private String getLocationInfo(){
+    private String getLocationInfo() {
         // 设置位置服务信息
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
@@ -280,35 +280,35 @@ public class MainActivity extends Activity {
         String provider = locationManager.getBestProvider(criteria,
                 true);
         Location location = null;
-        try{
-            locationManager.requestLocationUpdates(provider, 1000, 0,
-                locationListener);
-            location = locationManager
-                .getLastKnownLocation(provider);
-        while (location == null) {
+        try {
             locationManager.requestLocationUpdates(provider, 1000, 0,
                     locationListener);
-        }
-        }catch (SecurityException e){
+            location = locationManager
+                    .getLastKnownLocation(provider);
+            while (location == null) {
+                locationManager.requestLocationUpdates(provider, 1000, 0,
+                        locationListener);
+            }
+        } catch (SecurityException e) {
             Log.w(TAG, e.getMessage());
             return null;
         }
         //lng+lat
-        String locationStr = location.getLongitude() +"+"+location.getLatitude();
+        String locationStr = location.getLongitude() + "+" + location.getLatitude();
         return locationStr;
     }
 
-    private String getTelNoPlusIMEI(){
+    private String getTelNoPlusIMEI() {
         String tel = null;
         String imei = null;
         try {
             TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
             tel = tm.getLine1Number();//手机号
             imei = tm.getSimSerialNumber();
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
-        return tel+"+"+imei;
+        return tel + "+" + imei;
     }
 
     private void inputPasswordBeforeOpenParentControll() {
@@ -329,26 +329,24 @@ public class MainActivity extends Activity {
                         //TODO password corrent to route
                         //获取密码
                         String savedParentPassword = getParentPassword();
-                        if(savedParentPassword!=null && inputPassword.equals(savedParentPassword)){
+                        if (savedParentPassword != null && inputPassword.equals(savedParentPassword)) {
                             cleanPasswordWrongTimesTable();
                             route2Activity(ParentControlActivity.class);
-                        }
-                        else{
+                        } else {
                             String[] result = getPasswordWrongTimes();
                             int wrongTimes = Integer.valueOf(result[0]);
-                            if(result[1]!=null){
+                            if (result[1] != null) {
                                 long wrongDateStr = Long.valueOf(result[1]);
-                                if((TimeUtils.isYeaterday(new Date(wrongDateStr), new Date())!=0) && wrongTimes>=3){
+                                if ((TimeUtils.isYeaterday(new Date(wrongDateStr), new Date()) != 0) && wrongTimes >= 3) {
                                     Toast.makeText(getApplicationContext(), R.string.password_wrong_over_time, Toast.LENGTH_LONG).show();
-                                }
-                                else{
-                                    int currentWrongTimes = wrongTimes+1;
-                                    int leftWrongTimes = MAX_WRONG_PASSWORD_TIMES-currentWrongTimes;
+                                } else {
+                                    int currentWrongTimes = wrongTimes + 1;
+                                    int leftWrongTimes = MAX_WRONG_PASSWORD_TIMES - currentWrongTimes;
                                     //更新数据库密码输入错误次数
                                     updatePasswordWrongTimes(String.valueOf(currentWrongTimes));
                                     String msg = getResources().getString(R.string.password_wrong);
                                     String showMsg = String.format(msg, currentWrongTimes, leftWrongTimes);
-                                    Toast.makeText(getApplicationContext(), showMsg,Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), showMsg, Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -395,25 +393,24 @@ public class MainActivity extends Activity {
         }
     };
 
-    private boolean createTableIfNotExist(){
+    private boolean createTableIfNotExist() {
 
 //        dropDb(db);
 
         //家长密码表
-        if(!checkIfTableExist(parentControlPasswordTable)){
-            db.execSQL("create table "+parentControlPasswordTable+"(_id integer primary key autoincrement, parent_password varchar(50), password_type varchar(20))");
+        if (!checkIfTableExist(parentControlPasswordTable)) {
+            db.execSQL("create table " + parentControlPasswordTable + "(_id integer primary key autoincrement, parent_password varchar(50), password_type varchar(20))");
         }
         //
-        if(!checkIfTableExist(passwordControlTable)){
-            db.execSQL("create table "+passwordControlTable+"(_id integer primary key autoincrement, wrong_times varchar(50), password_type varchar(20), password_date_time varchar(100))");
+        if (!checkIfTableExist(passwordControlTable)) {
+            db.execSQL("create table " + passwordControlTable + "(_id integer primary key autoincrement, wrong_times varchar(50), password_type varchar(20), password_date_time varchar(100))");
             //初始化表
-            db.execSQL("insert into "+passwordControlTable+" (wrong_times, password_type, password_date_time) values ('0','pwd','"+new Date().getTime()+"')"); //输入密码错误的次数
-            db.execSQL("insert into "+passwordControlTable+" (wrong_times, password_type, password_date_time) values ('0','rst','"+new Date().getTime()+"')"); //输入忘记密码的提示问题的错误次数
+            db.execSQL("insert into " + passwordControlTable + " (wrong_times, password_type, password_date_time) values ('0','pwd','" + new Date().getTime() + "')"); //输入密码错误的次数
+            db.execSQL("insert into " + passwordControlTable + " (wrong_times, password_type, password_date_time) values ('0','rst','" + new Date().getTime() + "')"); //输入忘记密码的提示问题的错误次数
         }
         //家长控制表
-        if(!checkIfTableExist(applicationControlTable))
-        {
-            db.execSQL("create table "+applicationControlTable+"(_id integer primary key autoincrement, " +
+        if (!checkIfTableExist(applicationControlTable)) {
+            db.execSQL("create table " + applicationControlTable + "(_id integer primary key autoincrement, " +
                     "application_name varchar(200), " +
                     "use_flag varchar(20), " +
                     "start_time_hour varchar(50), " +
@@ -422,20 +419,20 @@ public class MainActivity extends Activity {
                     "end_time_minute varchar(50))");
         }
         //重置密码
-        if(!checkIfTableExist(resetPasswordTable)){
-            db.execSQL("create table "+resetPasswordTable+"(_id integer primary key autoincrement, question varchar(50), answer varchar(50))");
+        if (!checkIfTableExist(resetPasswordTable)) {
+            db.execSQL("create table " + resetPasswordTable + "(_id integer primary key autoincrement, question varchar(50), answer varchar(50))");
         }
         //紧急联系人电话
-        if(!checkIfTableExist(emergencePhoneTable)){
-            db.execSQL("create table "+emergencePhoneTable+"(_id integer primary key autoincrement, phone_no varchar(50))");
+        if (!checkIfTableExist(emergencePhoneTable)) {
+            db.execSQL("create table " + emergencePhoneTable + "(_id integer primary key autoincrement, phone_no varchar(50))");
         }
         return true;
     }
 
-    private boolean checkIfTableExist(String tableName){
-        Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '"+tableName+"'", null);
-        if(cursor!=null) {
-            if(cursor.getCount()>0) {
+    private boolean checkIfTableExist(String tableName) {
+        Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + tableName + "'", null);
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
                 cursor.close();
                 return true;
             }
@@ -444,11 +441,11 @@ public class MainActivity extends Activity {
         return false;
     }
 
-    private boolean ifNeedGotoInitActivity(){
-        Cursor cursor = db.rawQuery("select parent_password from "+parentControlPasswordTable+"",null);
-        if(cursor.moveToFirst()){
+    private boolean ifNeedGotoInitActivity() {
+        Cursor cursor = db.rawQuery("select parent_password from " + parentControlPasswordTable + "", null);
+        if (cursor.moveToFirst()) {
             return false;
-        }else {
+        } else {
             return true;
         }
     }
@@ -467,20 +464,20 @@ public class MainActivity extends Activity {
         }
     }
 
-    private String getParentPassword(){
-        Cursor cursor = db.rawQuery("select parent_password from "+parentControlPasswordTable+"",null);
-        if(cursor.moveToFirst()){
+    private String getParentPassword() {
+        Cursor cursor = db.rawQuery("select parent_password from " + parentControlPasswordTable + "", null);
+        if (cursor.moveToFirst()) {
             return cursor.getString(0);
-        }else {
+        } else {
             return null;
         }
     }
 
-    private String[] getPasswordWrongTimes(){
+    private String[] getPasswordWrongTimes() {
         String wrongTimeInDb = null;
         String wrongDate = null;
-        Cursor cursor = db.rawQuery("select wrong_times, password_date_time from "+passwordControlTable+" where password_type='pwd'",null);
-        if(cursor.moveToFirst()){
+        Cursor cursor = db.rawQuery("select wrong_times, password_date_time from " + passwordControlTable + " where password_type='pwd'", null);
+        if (cursor.moveToFirst()) {
             wrongTimeInDb = cursor.getString(0);
             wrongDate = cursor.getString(1);
         }
@@ -488,12 +485,12 @@ public class MainActivity extends Activity {
         return new String[]{wrongTimeInDb, wrongDate};
     }
 
-    private void updatePasswordWrongTimes(String times){
-        db.execSQL("update "+passwordControlTable+" set wrong_times='"+times+"', password_date_time='"+new Date().getTime()+"' where password_type='pwd'");
+    private void updatePasswordWrongTimes(String times) {
+        db.execSQL("update " + passwordControlTable + " set wrong_times='" + times + "', password_date_time='" + new Date().getTime() + "' where password_type='pwd'");
     }
 
-    private void cleanPasswordWrongTimesTable(){
-        db.execSQL("update "+passwordControlTable+" set wrong_times='0', password_date_time='"+new Date().getTime()+"' where password_type='pwd'");
+    private void cleanPasswordWrongTimesTable() {
+        db.execSQL("update " + passwordControlTable + " set wrong_times='0', password_date_time='" + new Date().getTime() + "' where password_type='pwd'");
     }
 
 }

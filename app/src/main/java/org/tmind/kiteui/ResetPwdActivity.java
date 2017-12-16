@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.AyncHttpTask;
+import org.tmind.kiteui.utils.PhoneUtil;
 
 public class ResetPwdActivity extends AppCompatActivity {
 
@@ -106,13 +107,7 @@ public class ResetPwdActivity extends AppCompatActivity {
             }else {
                 send2ServerEmergencePhone = emergencePhoneNoStr;
             }
-            String imei = null;
-            try {
-                TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                imei = tm.getSimSerialNumber();
-            }catch (Exception e){
-                Log.e(TAG,e.getMessage());
-            }finally {
+                String imei = PhoneUtil.getImei(context);
                 String send2RemoteStr = imei+"+"+send2ServerEmergencePhone+"+"+newPwdStr;
                 String remoteServerAddr = getResources().getString(R.string.remote_server_address);
                 String url = remoteServerAddr+"/rest/regist/"+send2RemoteStr;
@@ -120,7 +115,7 @@ public class ResetPwdActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(context, MainActivity.class);
                 startActivity(intent);
-            }
+
         }
 
         private String getEmergencePhoneNo(){

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.AyncHttpTask;
+import org.tmind.kiteui.utils.PhoneUtil;
 
 public class InitialSettingActivity extends AppCompatActivity {
 
@@ -100,14 +101,8 @@ public class InitialSettingActivity extends AppCompatActivity {
                 Toast.makeText(context,"请输入正确的手机号码", Toast.LENGTH_SHORT).show();
                 return;
             }
-            //imei
-            String imei = null;
-            try{
-                TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                imei = tm.getSimSerialNumber();
-            }catch (Exception e){
-                Log.e(TAG, e.getMessage());
-            }finally {
+                //imei
+                String imei = PhoneUtil.getImei(context);
                 //
                 String send2RemoteStr = imei+"+"+emergencePhoneNoStr+"+"+newPwdStr;
                 String remoteServerAddr = getResources().getString(R.string.remote_server_address);
@@ -125,7 +120,6 @@ public class InitialSettingActivity extends AppCompatActivity {
                 db.execSQL(insertEmergencePhoneNo);
                 Intent intent = new Intent(InitialSettingActivity.this, MainActivity.class);
                 startActivity(intent);
-            }
         }
     }
 
