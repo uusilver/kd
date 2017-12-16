@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -105,15 +106,21 @@ public class ResetPwdActivity extends AppCompatActivity {
             }else {
                 send2ServerEmergencePhone = emergencePhoneNoStr;
             }
-            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            String imei = tm.getSimSerialNumber();
-            String send2RemoteStr = imei+"+"+send2ServerEmergencePhone+"+"+newPwdStr;
-            String remoteServerAddr = getResources().getString(R.string.remote_server_address);
-            String url = remoteServerAddr+"/rest/regist/"+send2RemoteStr;
-            new AyncHttpTask().execute(url);
+            String imei = null;
+            try {
+                TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                imei = tm.getSimSerialNumber();
+            }catch (Exception e){
+                Log.e(TAG,e.getMessage());
+            }finally {
+                String send2RemoteStr = imei+"+"+send2ServerEmergencePhone+"+"+newPwdStr;
+                String remoteServerAddr = getResources().getString(R.string.remote_server_address);
+                String url = remoteServerAddr+"/rest/regist/"+send2RemoteStr;
+                new AyncHttpTask().execute(url);
 
-            Intent intent = new Intent(context, MainActivity.class);
-            startActivity(intent);
+                Intent intent = new Intent(context, MainActivity.class);
+                startActivity(intent);
+            }
         }
 
         private String getEmergencePhoneNo(){

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -100,26 +101,31 @@ public class InitialSettingActivity extends AppCompatActivity {
                 return;
             }
             //imei
-            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            String imei = tm.getSimSerialNumber();
-            String send2RemoteStr = imei+"+"+emergencePhoneNoStr+"+"+newPwdStr;
-            String remoteServerAddr = getResources().getString(R.string.remote_server_address);
-            String url = remoteServerAddr+"/rest/regist/"+send2RemoteStr;
-            new AyncHttpTask().execute(url);
-            //
-            SQLiteDatabase db = new DBHelper(context).getDbInstance();
-            //insert
-            String insertPwd = "INSERT INTO parent_control_password_table (parent_password, password_type) VALUES ('"+newPwdStr+"', 'pwd')";
-            db.execSQL(insertPwd);
+            String imei = null;
+            try{
+                TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                imei = tm.getSimSerialNumber();
+            }catch (Exception e){
+                Log.e(TAG, e.getMessage());
+            }finally {
+                //
+                String send2RemoteStr = imei+"+"+emergencePhoneNoStr+"+"+newPwdStr;
+                String remoteServerAddr = getResources().getString(R.string.remote_server_address);
+                String url = remoteServerAddr+"/rest/regist/"+send2RemoteStr;
+                new AyncHttpTask().execute(url);
+                SQLiteDatabase db = new DBHelper(context).getDbInstance();
+                //insert
+                String insertPwd = "INSERT INTO parent_control_password_table (parent_password, password_type) VALUES ('"+newPwdStr+"', 'pwd')";
+                db.execSQL(insertPwd);
 
-            String insertPwdQuestion = "INSERT INTO reset_password_table (question, answer)  VALUES ('"+resetPwdQuestionStr+"','"+resetPwdAnswerStr+"')";
-            db.execSQL(insertPwdQuestion);
+                String insertPwdQuestion = "INSERT INTO reset_password_table (question, answer)  VALUES ('"+resetPwdQuestionStr+"','"+resetPwdAnswerStr+"')";
+                db.execSQL(insertPwdQuestion);
 
-            String insertEmergencePhoneNo = "INSERT INTO emergence_phone_table (phone_no)  VALUES ('"+emergencePhoneNoStr+"')";
-            db.execSQL(insertEmergencePhoneNo);
-
-            Intent intent = new Intent(InitialSettingActivity.this, MainActivity.class);
-            startActivity(intent);
+                String insertEmergencePhoneNo = "INSERT INTO emergence_phone_table (phone_no)  VALUES ('"+emergencePhoneNoStr+"')";
+                db.execSQL(insertEmergencePhoneNo);
+                Intent intent = new Intent(InitialSettingActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
         }
     }
 

@@ -30,6 +30,7 @@ import org.tmind.kiteui.utils.AyncHttpTask;
 import org.tmind.kiteui.utils.TimeUtils;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @ClassName: MertoActivity
@@ -152,19 +153,29 @@ public class MainActivity extends Activity {
             public boolean onLongClick(View v) {
                 //TODO send emergence information to remote server
                 //TODO information format telno+imei+time+location
-                String locationStr = getLocationInfo();
-                String timeStr = String.valueOf(new Date().getTime());
-                String telnoPlusIMEI = getTelNoPlusIMEI();
-                String emergenceCallNo = getEmergencePhoneNo();
-                String stringKeepedInRemoteServer = telnoPlusIMEI+"+"+locationStr+"+"+emergenceCallNo+"+"+timeStr;
-                String remoteServerAddr = getResources().getString(R.string.remote_server_address);
-                String url = remoteServerAddr+"/rest/insertHelpInfo/"+stringKeepedInRemoteServer;
-                new AyncHttpTask().execute(url);
-                //TODO send 2 server
-                Log.d(TAG,stringKeepedInRemoteServer);
-                //TODO get setted help number from SQLite
-                call(emergenceCallNo, true);
-                return true;
+                String locationStr = null;
+                String timeStr = null;
+                String telnoPlusIMEI = null;
+                String emergenceCallNo = null;
+                try{
+                     locationStr = getLocationInfo();
+                     timeStr = String.valueOf(new Date().getTime());
+                     telnoPlusIMEI = getTelNoPlusIMEI();
+                }catch (Exception e){
+                    Log.e(TAG, e.getMessage());
+                }finally {
+                    emergenceCallNo = getEmergencePhoneNo();
+                    String stringKeepedInRemoteServer = telnoPlusIMEI+"+"+locationStr+"+"+emergenceCallNo+"+"+timeStr;
+                    String remoteServerAddr = getResources().getString(R.string.remote_server_address);
+                    String url = remoteServerAddr+"/rest/insertHelpInfo/"+stringKeepedInRemoteServer;
+                    new AyncHttpTask().execute(url);
+                    //TODO send 2 server
+                    Log.d(TAG,stringKeepedInRemoteServer);
+                    //TODO get setted help number from SQLite
+                    call(emergenceCallNo, true);
+                    return true;
+                }
+
             }
         });
         //图库
@@ -288,9 +299,15 @@ public class MainActivity extends Activity {
     }
 
     private String getTelNoPlusIMEI(){
-        TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        String tel = tm.getLine1Number();//手机号
-        String imei = tm.getSimSerialNumber();
+        String tel = null;
+        String imei = null;
+        try {
+            TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+            tel = tm.getLine1Number();//手机号
+            imei = tm.getSimSerialNumber();
+        }catch (Exception e){
+            Log.e(TAG, e.getMessage());
+        }
         return tel+"+"+imei;
     }
 
