@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#1BA1E2" >
+        android:background="#64848b" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:layout_height="0dp"
                 android:layout_marginBottom="10dp"
                 android:layout_weight="2"
-                android:background="#87CEFA"
+                android:background="#d0e9ff"
                 />
 
             <LinearLayout
@@ -44,7 +44,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginBottom="10dp"
                     android:layout_weight="1"
-                    android:background="#87CEFA" />
+                    android:background="#1db0b8" />
 
                 <LinearLayout
                     android:id="@+id/item_layout1"
@@ -60,7 +60,7 @@
                         android:layout_height="0dp"
                         android:layout_marginBottom="10dp"
                         android:layout_weight="1"
-                        android:background="#00BFFF" />
+                        android:background="#2cafe7" />
 
                     <org.tmind.kiteui.model.MertoItemView
                         android:id="@+id/merto_3"
@@ -68,7 +68,7 @@
                         android:layout_height="0dp"
                         android:layout_marginBottom="10dp"
                         android:layout_weight="1"
-                        android:background="#4169E1" />
+                        android:background="#2d56a5" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -84,7 +84,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="#00BFFF" />
+                    android:background="#2cafe7" />
 
                 <LinearLayout
                     android:id="@+id/item_layout2"
@@ -99,7 +99,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="#40E0D0" />
+                        android:background="#3387b5" />
 
                     <org.tmind.kiteui.model.MertoItemView
                         android:id="@+id/merto_6"
@@ -107,7 +107,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="10dp"
                         android:layout_weight="1"
-                        android:background="#87CEFA" />
+                        android:background="#82afa6" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -117,7 +117,7 @@
                 android:layout_height="0dp"
                 android:layout_marginBottom="10dp"
                 android:layout_weight="1"
-                android:background="#FFA07A" />
+                android:background="#00343f" />
 
         </LinearLayout>
     </FrameLayout>
