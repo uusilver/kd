@@ -197,7 +197,7 @@ public class MicRecordActivity extends Activity implements View.OnClickListener 
                         mAudioRecoderUtils.stopRecord();        //结束录音（保存录音文件）
 //                        mAudioRecoderUtils.cancelRecord();    //取消录音（不保存录音文件）
                         mPop.dismiss();
-                        mButton.setText("按住说话");
+                        mButton.setText(R.string.mic_hold_speak);
                         break;
                 }
                 return true;
@@ -358,9 +358,9 @@ public class MicRecordActivity extends Activity implements View.OnClickListener 
                                             Toast.makeText(context, R.string.mic_rename_file_successful, Toast.LENGTH_LONG).show();
                                             array.set(position,inputFileName);
                                             selectid.clear();
+                                            txtcount.setText("共选择了0项");
                                             micListAdapter = new MicListAdapter(context, txtcount);
                                             listview.setAdapter(micListAdapter);
-                                            layout.setVisibility(View.INVISIBLE);
                                         }
 
                                     }

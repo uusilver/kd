@@ -2,6 +2,7 @@
     <string name="app_name">风筝桌面_Pre_Test</string>
     <string name="remote_server_address">http://106.14.70.75:8004/bee</string>
     <string name="mic">录音机</string>
+    <string name="mic_hold_speak">按住说话</string>
     <string name="mic_rename">重命名</string>
     <string name="mic_rename_file_name">重命名</string>
     <string name="mic_rename_file_do_not_exist">旧文件不存在</string>
