@@ -44,6 +44,7 @@ public class PhoneUtil {
     public static String getLocationInfo(LocationManager locationManager, LocationListener locationListener){
         // 设置位置服务信息
         // 设置位置服务信息
+        String locationStr = "unknown+unknown";
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setAltitudeRequired(false);
@@ -55,20 +56,19 @@ public class PhoneUtil {
                 true);
         Location location = null;
         try {
-            locationManager.requestLocationUpdates(provider, 1000, 0,
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0,
                     locationListener);
             location = locationManager
                     .getLastKnownLocation(provider);
-            while (location == null) {
-                locationManager.requestLocationUpdates(provider, 1000, 0,
-                        locationListener);
-            }
-        } catch (Exception e) {
+        } catch (SecurityException e1){
+            Log.w(TAG, e1.getMessage());
+        } catch(Exception e) {
             Log.w(TAG, e.getMessage());
-            return null;
         }
         //lng+lat
-        String locationStr = location.getLongitude() + "+" + location.getLatitude();
+        if(location!=null) {
+            locationStr = location.getLongitude() + "+" + location.getLatitude();
+        }
         return locationStr;
     }
 }

@@ -210,8 +210,10 @@ public class MicRecordActivity extends Activity implements View.OnClickListener 
      */
     private void initAmrList() {
         File[] files = new File(FILE_PATH).listFiles();
-        for (File file : files) {
-            array.add(file.getName());
+        if(files!=null && files.length>0){
+            for (File file : files) {
+                array.add(file.getName());
+            }
         }
     }
     /**
