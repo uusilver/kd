@@ -3,6 +3,7 @@
     <string name="remote_server_address">http://106.14.70.75:8004/bee</string>
     <string name="mic">录音机</string>
     <string name="mic_hold_speak">按住说话</string>
+    <string name="title_activity_normal_setting">个人设置</string>
     <string name="mic_rename">重命名</string>
     <string name="mic_rename_file_name">重命名</string>
     <string name="mic_rename_file_do_not_exist">旧文件不存在</string>

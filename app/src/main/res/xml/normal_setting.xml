@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Settings">
+    <PreferenceCategory
+        android:title="主题设置">
+        <!--<SwitchPreference-->
+            <!--android:title="意大利蓝"-->
+            <!--android:summaryOn="开启"-->
+            <!--android:summaryOff="关闭"-->
+            <!--android:key="blue"-->
+            <!--android:id="@+id/blue"-->
+            <!--android:defaultValue="true">-->
+        <!--</SwitchPreference>-->
+
+        <!--<SwitchPreference-->
+            <!--android:title="西班牙粉"-->
+            <!--android:summaryOn="开启"-->
+            <!--android:id="@+id/pink"-->
+            <!--android:summaryOff="关闭"-->
+            <!--android:key="pink"-->
+            <!--android:defaultValue="false">-->
+        <!--</SwitchPreference>-->
+
+        <ListPreference
+            android:key="themes"
+            android:title="系统主题"
+            android:summary="意大利蓝"
+            android:entries="@array/themes"
+            android:entryValues="@array/themes_value"
+            android:defaultValue="1"
+            android:dialogTitle="选择一个" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

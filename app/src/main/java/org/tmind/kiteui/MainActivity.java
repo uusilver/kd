@@ -198,11 +198,18 @@ public class MainActivity extends Activity {
         });
         //设置
         parenetControllItem.setIcon(R.drawable.kid_ui_setting);
-        parenetControllItem.setText("家长设置");
+        parenetControllItem.setText("设置");
         parenetControllItem.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+               route2Activity(NormalSettingActivity.class);
+            }
+        });
+        parenetControllItem.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
                 inputPasswordBeforeOpenParentControll();
+                return false;
             }
         });
     }

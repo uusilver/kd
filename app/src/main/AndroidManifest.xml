@@ -21,11 +21,13 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="org.tmind.kiteui.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
-                <!-- add lancher configuration-->
+
+                <!-- add lancher configuration -->
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -47,16 +49,15 @@
         <activity
             android:name=".ResetPwdActivity"
             android:label="@string/reset_pwd_title" />
-
         <activity
             android:name=".ResetPwdQuestionActivity"
-            android:label="@string/reset_pwd_question_title"/>
+            android:label="@string/reset_pwd_question_title" />
 
         <service android:name=".service.LongRunningService" />
 
         <receiver android:name=".service.AlarmReceiver" />
 
-
+        <activity android:name=".NormalSettingActivity" android:label="@string/title_activity_normal_setting" />
     </application>
 
 </manifest>
