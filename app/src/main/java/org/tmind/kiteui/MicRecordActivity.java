@@ -12,10 +12,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class MicRecordActivity extends Activity implements View.OnClickListener {
+public class MicRecordActivity extends AppCompatActivity implements View.OnClickListener {
 
     static final int VOICE_REQUEST_CODE = 66;
     private final static String FILE_PATH = Environment.getExternalStorageDirectory() + "/record/";
@@ -69,6 +71,7 @@ public class MicRecordActivity extends Activity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mic_record);
         context = this;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         rl = (LinearLayout) findViewById(R.id.activity_mic_record);
 
@@ -124,6 +127,18 @@ public class MicRecordActivity extends Activity implements View.OnClickListener 
         initAmrList();
         micListAdapter = new MicListAdapter(context, txtcount);
         listview.setAdapter(micListAdapter);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     @Override

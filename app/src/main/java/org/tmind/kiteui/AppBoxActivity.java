@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -42,7 +43,7 @@ public class AppBoxActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_box);
         context = this;
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         db = new DBHelper(context).getDbInstance();
         appBoxItems = new ArrayList<>();
         //加载app应用。
@@ -56,6 +57,18 @@ public class AppBoxActivity extends AppCompatActivity {
         //
 
         gridView.setOnItemClickListener(clickListener);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     private AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {

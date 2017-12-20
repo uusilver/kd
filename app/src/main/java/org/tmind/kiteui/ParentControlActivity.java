@@ -18,6 +18,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -71,6 +72,7 @@ public class ParentControlActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parent_control);
         context = this;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //call progress dialog when time cosum opertaion run
         pd = ProgressDialog.show(context, "读取中...", "请等待", true, false);
         //inital db object
@@ -91,6 +93,18 @@ public class ParentControlActivity extends AppCompatActivity {
                     handler.sendEmptyMessage(0);
             }
         }.start();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     private void initAppInfo() {
