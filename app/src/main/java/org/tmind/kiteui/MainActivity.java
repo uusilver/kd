@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Criteria;
@@ -13,7 +14,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -48,6 +51,8 @@ public class MainActivity extends Activity {
     private MertoItemView telephoneItem, smsItem, photoItem, micItem, emergenceHelpItem, pictureItem, appBox,
             parenetControllItem;
 
+    private SharedPreferences sharedPreferences;
+
     //Location variables
     private LocationManager locationManager;
     private String locationProvider;
@@ -70,6 +75,7 @@ public class MainActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         context = this;
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         //检查数据库 & 表
         db = new DBHelper(this).getDbInstance();
         //检查表是否存在，不存在则创建，存在则返回
@@ -85,6 +91,10 @@ public class MainActivity extends Activity {
     }
 
     //初始化UI桌面图标，名称和功能
+
+    /**
+     * @see res/arrays.xml
+     */
     private void initView() {
         mertoContent = (FrameLayout) findViewById(R.id.merto_content);
         itemLayout1 = (LinearLayout) findViewById(R.id.item_layout1);
@@ -97,7 +107,7 @@ public class MainActivity extends Activity {
         pictureItem = (MertoItemView) findViewById(R.id.merto_5);
         appBox = (MertoItemView) findViewById(R.id.merto_6);
         parenetControllItem = (MertoItemView) findViewById(R.id.merto_7);
-
+        initColor();
         telephoneItem.setTag(0);
         smsItem.setTag(1);
         photoItem.setTag(2);
@@ -212,6 +222,32 @@ public class MainActivity extends Activity {
                 return false;
             }
         });
+    }
+
+    private void initColor(){
+        //获得颜色代码, 0 -> pink, 1 -> blue, 2 -> red
+        int currentThemeValue = sharedPreferences.getInt("current_theme", 1);
+        if(currentThemeValue == 0){
+            telephoneItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_telephoneItem));
+            smsItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_smsItem));
+            photoItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_photoItem));
+            micItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_micItem));
+            emergenceHelpItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_emergenceHelpItem));
+            pictureItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_pictureItem));
+            appBox.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_appBox));
+            parenetControllItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_parenetControllItem));
+        }
+        if(currentThemeValue == 1){
+            telephoneItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_telephoneItem));
+            smsItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_smsItem));
+            photoItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_photoItem));
+            micItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_micItem));
+            emergenceHelpItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_emergenceHelpItem));
+            pictureItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_pictureItem));
+            appBox.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_appBox));
+            parenetControllItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_parenetControllItem));
+        }
+
     }
 
     private String getEmergencePhoneNo() {

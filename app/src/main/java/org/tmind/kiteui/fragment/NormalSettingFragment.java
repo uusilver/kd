@@ -16,6 +16,7 @@ import org.tmind.kiteui.R;
  */
 
 public class NormalSettingFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener,Preference.OnPreferenceClickListener{
+
     private final static String TAG = "NormalSettingFragment";
     private  CharSequence[] theme;
     private  SharedPreferences sharedPreferences;
