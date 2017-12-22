@@ -19,6 +19,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -33,6 +34,7 @@ import org.tmind.kiteui.utils.AyncHttpTask;
 import org.tmind.kiteui.utils.PhoneUtil;
 import org.tmind.kiteui.utils.TimeUtils;
 
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
@@ -91,7 +93,6 @@ public class MainActivity extends Activity {
     }
 
     //初始化UI桌面图标，名称和功能
-
     /**
      * @see res/arrays.xml
      */
@@ -228,6 +229,7 @@ public class MainActivity extends Activity {
         //获得颜色代码, 0 -> pink, 1 -> blue, 2 -> red
         int currentThemeValue = sharedPreferences.getInt("current_theme", 1);
         if(currentThemeValue == 0){
+            mertoContent.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_bkg));
             telephoneItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_telephoneItem));
             smsItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_smsItem));
             photoItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_photoItem));
@@ -238,6 +240,7 @@ public class MainActivity extends Activity {
             parenetControllItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_parenetControllItem));
         }
         if(currentThemeValue == 1){
+            mertoContent.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_bkg));
             telephoneItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_telephoneItem));
             smsItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_smsItem));
             photoItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_photoItem));

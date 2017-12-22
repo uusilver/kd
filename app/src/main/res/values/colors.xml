@@ -6,6 +6,7 @@
     <color name="colorGray">#33000000</color>
     <color name="lemonchiffon">#FFCC33</color>
     
+    <color name="theme_blue_bkg">#64848b</color>
     <color name="theme_blue_telephoneItem">#d0e9ff</color>
     <color name="theme_blue_smsItem">#1db0b8</color>
     <color name="theme_blue_photoItem">#2cafe7</color>
@@ -15,8 +16,9 @@
     <color name="theme_blue_appBox">#82afa6</color>
     <color name="theme_blue_parenetControllItem">#00343f</color>
 
+    <color name="theme_pink_bkg">#36002b</color>
     <color name="theme_pink_telephoneItem">#ffd0f9</color>
-    <color name="theme_pink_smsItem">#9800d5</color>
+    <color name="theme_pink_smsItem">#FF77FF</color>
     <color name="theme_pink_photoItem">#f614ff</color>
     <color name="theme_pink_micItem">#be1386</color>
     <color name="theme_pink_emergenceHelpItem">#f614ff</color>

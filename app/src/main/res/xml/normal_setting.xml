@@ -32,4 +32,5 @@
             android:dialogTitle="选择一个" />
 
     </PreferenceCategory>
+
 </PreferenceScreen>
