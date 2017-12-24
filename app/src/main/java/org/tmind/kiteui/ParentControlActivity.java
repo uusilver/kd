@@ -109,15 +109,16 @@ public class ParentControlActivity extends AppCompatActivity {
 
     private void initAppInfo() {
         //get all saved from database;
-        Cursor cursor = db.rawQuery("select application_name,use_flag,start_time_hour,start_time_minute,end_time_hour,end_time_minute from application_control_table", null);
+        Cursor cursor = db.rawQuery("select application_name,pkg, use_flag,start_time_hour,start_time_minute,end_time_hour,end_time_minute from application_control_table", null);
         while (cursor.moveToNext()){
             PackageInfoModel model = new PackageInfoModel();
             model.setApplicationName(cursor.getString(0));
-            model.setAllowFlag(cursor.getString(1));
-            model.setStartTimeHour(cursor.getString(2));
-            model.setStartTimeMinute(cursor.getString(3));
-            model.setEndTimeHour(cursor.getString(4));
-            model.setEndTimeMinute(cursor.getString(5));
+            model.setPkg(cursor.getString(1));
+            model.setAllowFlag(cursor.getString(2));
+            model.setStartTimeHour(cursor.getString(3));
+            model.setStartTimeMinute(cursor.getString(4));
+            model.setEndTimeHour(cursor.getString(5));
+            model.setEndTimeMinute(cursor.getString(6));
             model.setOldAppFlag(true);
             tempArray.add(model);
         }
@@ -141,8 +142,8 @@ public class ParentControlActivity extends AppCompatActivity {
         //insert into database if new
         for(PackageInfoModel model : realArray){
             if(!model.isOldAppFlag()){
-                String insertSql = "insert into application_control_table (application_name, use_flag, start_time_hour, start_time_minute, end_time_hour, end_time_minute) VALUES (?,?,?,?,?,?)";
-                db.execSQL(insertSql, new Object[]{model.getApplicationName(), model.getAllowFlag(),model.getStartTimeHour(),model.getStartTimeMinute(), model.getEndTimeHour(), model.getEndTimeMinute()});
+                String insertSql = "insert into application_control_table (application_name, pkg, use_flag, start_time_hour, start_time_minute, end_time_hour, end_time_minute) VALUES (?,?,?,?,?,?,?)";
+                db.execSQL(insertSql, new Object[]{model.getApplicationName(), model.getPkg(), model.getAllowFlag(),model.getStartTimeHour(),model.getStartTimeMinute(), model.getEndTimeHour(), model.getEndTimeMinute()});
             }
         }
 

@@ -84,12 +84,6 @@ public class MainActivity extends Activity {
         context = this;
         //start app lock service
         //
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            //TODO should record?
-        }
         lockAppService = new Intent(this, LockAppService.class);
         startService(lockAppService);
 
@@ -101,6 +95,10 @@ public class MainActivity extends Activity {
         //进行初始化设置
         if (ifNeedGotoInitActivity()) {
             route2Activity(InitialSettingActivity.class);
+        }
+
+        if(PhoneUtil.isFirstStart(context)){
+            openSettingPreviledge();
         }
         //初始化整个UI
         initView();
@@ -272,6 +270,17 @@ public class MainActivity extends Activity {
             appBox.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_appBox));
             parenetControllItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_parenetControllItem));
         }
+        if(currentThemeValue == 2){
+            mertoContent.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_bkg));
+            telephoneItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_telephoneItem));
+            smsItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_smsItem));
+            photoItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_photoItem));
+            micItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_micItem));
+            emergenceHelpItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_emergenceHelpItem));
+            pictureItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_pictureItem));
+            appBox.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_appBox));
+            parenetControllItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_parenetControllItem));
+        }
 
     }
 
@@ -430,6 +439,14 @@ public class MainActivity extends Activity {
         builder.show();
     }
 
+    private void openSettingPreviledge(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
     /**
      * LocationListern监听器
      * 参数：地理位置提供器、监听位置变化的时间间隔、位置变化的距离间隔、LocationListener监听器
@@ -480,6 +497,7 @@ public class MainActivity extends Activity {
         if (!checkIfTableExist(applicationControlTable)) {
             db.execSQL("create table " + applicationControlTable + "(_id integer primary key autoincrement, " +
                     "application_name varchar(200), " +
+                    "pkg varchar(200), " +
                     "use_flag varchar(20), " +
                     "start_time_hour varchar(50), " +
                     "start_time_minute varchar(50), " +

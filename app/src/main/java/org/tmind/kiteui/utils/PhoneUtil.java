@@ -1,6 +1,7 @@
 package org.tmind.kiteui.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -10,6 +11,8 @@ import android.util.Log;
 
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by vali on 12/16/2017.
  */
@@ -18,30 +21,30 @@ public class PhoneUtil {
 
     private final static String TAG = "PhoneUtil";
 
-    public static String getImei(Context context){
+    public static String getImei(Context context) {
         String imei = "unknown";
         try {
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             imei = tm.getSimSerialNumber();
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
         return imei;
     }
 
-    public static String getPhoneNo(Context context){
+    public static String getPhoneNo(Context context) {
         String tel = "unknown";
         try {
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             tel = tm.getLine1Number();//手机号
-        }catch (Exception e){
-            Log.e(TAG,e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
         }
         return tel;
 
     }
 
-    public static String getLocationInfo(LocationManager locationManager, LocationListener locationListener){
+    public static String getLocationInfo(LocationManager locationManager, LocationListener locationListener) {
         // 设置位置服务信息
         // 设置位置服务信息
         String locationStr = "unknown+unknown";
@@ -60,15 +63,30 @@ public class PhoneUtil {
                     locationListener);
             location = locationManager
                     .getLastKnownLocation(provider);
-        } catch (SecurityException e1){
+        } catch (SecurityException e1) {
             Log.w(TAG, e1.getMessage());
-        } catch(Exception e) {
+        } catch (Exception e) {
             Log.w(TAG, e.getMessage());
         }
         //lng+lat
-        if(location!=null) {
+        if (location != null) {
             locationStr = location.getLongitude() + "+" + location.getLatitude();
         }
         return locationStr;
+    }
+
+    public static boolean isFirstStart(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("count", MODE_PRIVATE);
+        int count = sharedPreferences.getInt("count", 0);
+        if (count == 0) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            //存入数据
+            editor.putInt("count", 1);
+            //提交修改
+            editor.commit();
+            return true;
+        }
+        return false;
+
     }
 }

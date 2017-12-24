@@ -25,4 +25,14 @@
     <color name="theme_pink_pictureItem">#d017cc</color>
     <color name="theme_pink_appBox">#9678b8</color>
     <color name="theme_pink_parenetControllItem">#35003f</color>
+
+    <color name="theme_red_bkg">#e7e7e7</color>
+    <color name="theme_red_telephoneItem">#811316</color>
+    <color name="theme_red_smsItem">#6a5749</color>
+    <color name="theme_red_photoItem">#d8cdb4</color>
+    <color name="theme_red_micItem">#de686b</color>
+    <color name="theme_red_emergenceHelpItem">#de686b</color>
+    <color name="theme_red_pictureItem">#8e6548</color>
+    <color name="theme_red_appBox">#811316</color>
+    <color name="theme_red_parenetControllItem">#616161</color>
 </resources>
