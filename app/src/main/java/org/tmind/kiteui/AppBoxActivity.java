@@ -23,6 +23,7 @@ import android.widget.Toast;
 import org.tmind.kiteui.model.AppBoxItemModel;
 import org.tmind.kiteui.service.LongRunningService;
 import org.tmind.kiteui.utils.DBHelper;
+import org.tmind.kiteui.utils.PhoneUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,11 +76,11 @@ public class AppBoxActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             AppBoxItemModel model = appBoxItems.get(i);
-            String tS = model.getStartTimeHour()+":"+model.getStartTimeMinute();
-            String tE = model.getEndTimeHour()+":"+model.getEndTimeMinute();
+            String tS = model.getStartTimeHour().split("\\:")[0]+":"+model.getStartTimeMinute();
+            String tE = model.getEndTimeHour().split("\\:")[0]+":"+model.getEndTimeMinute();
             try {
                 //该应用的包名
-                if(isInZone(getLong(tS),getLong(tE),getCurrentTime())){
+                if(PhoneUtil.isApplicationAvaiableTimeInZone(PhoneUtil.getTimeHHMM2Long(tS),PhoneUtil.getTimeHHMM2Long(tE),PhoneUtil.getCurrentTime())){
                     //
                     String pkg = model.getPkg();
                     //应用的主activity类
@@ -113,15 +114,7 @@ public class AppBoxActivity extends AppCompatActivity {
     private static final String formatStr = "HH:mm";
     private static SimpleDateFormat sdf=new SimpleDateFormat(formatStr);
 
-    private  boolean isInZone(long tStart,long tEnd,long t) throws ParseException {
-        return tStart <= t && t <= tEnd;
-    }
-    private  long getLong(String timeStr) throws ParseException {
-        return sdf.parse(timeStr).getTime();
-    }
-    private  long getCurrentTime() throws ParseException {
-        return getLong(sdf.format(new Date()));
-    }
+
 
 
     private List<ResolveInfo> apps;

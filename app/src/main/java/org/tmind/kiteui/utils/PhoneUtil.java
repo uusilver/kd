@@ -9,6 +9,9 @@ import android.location.LocationManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -88,5 +91,20 @@ public class PhoneUtil {
         }
         return false;
 
+    }
+
+    private static final String formatStr = "HH:mm";
+    private static SimpleDateFormat sdf=new SimpleDateFormat(formatStr);
+
+    public static long getTimeHHMM2Long(String timeStr) throws ParseException {
+        return sdf.parse(timeStr).getTime();
+    }
+
+    public static boolean isApplicationAvaiableTimeInZone(long tStart,long tEnd,long t) throws ParseException {
+        return tStart <= t && t <= tEnd;
+    }
+
+    public static long getCurrentTime() throws ParseException {
+        return PhoneUtil.getTimeHHMM2Long(sdf.format(new Date()));
     }
 }
