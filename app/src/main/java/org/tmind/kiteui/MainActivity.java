@@ -13,9 +13,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -29,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.tmind.kiteui.model.MertoItemView;
+import org.tmind.kiteui.service.LockAppService;
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.AyncHttpTask;
 import org.tmind.kiteui.utils.PhoneUtil;
@@ -71,12 +74,25 @@ public class MainActivity extends Activity {
 
     private Context context;
 
+    private Intent lockAppService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         context = this;
+        //start app lock service
+        //
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            //TODO should record?
+        }
+        lockAppService = new Intent(this, LockAppService.class);
+        startService(lockAppService);
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         //检查数据库 & 表
         db = new DBHelper(this).getDbInstance();
@@ -90,6 +106,12 @@ public class MainActivity extends Activity {
         initView();
         //获取地理位置管理器
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+    }
+
+    @Override
+    public void onDestroy(){
+        stopService(lockAppService);
+        super.onDestroy();
     }
 
     //初始化UI桌面图标，名称和功能

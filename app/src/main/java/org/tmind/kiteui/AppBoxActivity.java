@@ -86,13 +86,13 @@ public class AppBoxActivity extends AppCompatActivity {
                     String cls = model.getMainCls();
                     ComponentName componet = new ComponentName(pkg, cls);
                     //
-                    Intent serviceIntent = new Intent(context, LongRunningService.class);
-                    serviceIntent.putExtra("pkg", pkg);
-                    serviceIntent.putExtra("endTimeHour",model.getEndTimeHour());
-                    serviceIntent.putExtra("endTimeMinute",model.getEndTimeMinute());
-                    //start monitor service
-                    stopService(serviceIntent);
-                    startService(serviceIntent);
+//                    Intent serviceIntent = new Intent(context, LongRunningService.class);
+//                    serviceIntent.putExtra("pkg", pkg);
+//                    serviceIntent.putExtra("endTimeHour",model.getEndTimeHour());
+//                    serviceIntent.putExtra("endTimeMinute",model.getEndTimeMinute());
+//                    //start monitor service
+//                    stopService(serviceIntent);
+//                    startService(serviceIntent);
                     //route to real application
                     Intent intent = new Intent();
                     intent.setComponent(componet);
