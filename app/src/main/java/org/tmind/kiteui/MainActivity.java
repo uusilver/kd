@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
 
     private Context context;
 
-    private Intent lockAppService;
+    public static Intent lockAppService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +106,13 @@ public class MainActivity extends Activity {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
 
+    @Override
+    public void onResume(){
+        //restart lock app service
+        stopService(lockAppService);
+        startService(lockAppService);
+        super.onResume();
+    }
     @Override
     public void onDestroy(){
         stopService(lockAppService);

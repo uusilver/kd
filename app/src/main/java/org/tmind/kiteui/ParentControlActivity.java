@@ -76,6 +76,7 @@ public class ParentControlActivity extends AppCompatActivity {
         //call progress dialog when time cosum opertaion run
         pd = ProgressDialog.show(context, "读取中...", "请等待", true, false);
         //inital db object
+        stopService(MainActivity.lockAppService);
         db = new DBHelper(context).getDbInstance();
         new Thread(){
             @Override

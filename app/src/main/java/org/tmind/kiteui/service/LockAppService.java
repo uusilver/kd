@@ -92,6 +92,7 @@ public class LockAppService extends Service {
     @Override
     public void onDestroy() {
         System.out.println("onDestroy invoke");
+        mCheckAppLock.getLooper().quit();
         super.onDestroy();
     }
 
@@ -124,7 +125,7 @@ public class LockAppService extends Service {
                     Log.e("TopActivity Name", new Date().toString()+":"+topActivity);
                     if(!topActivity.equals("org.tmind.kiteui")){
                         if(isTopActivityNeed2Stop(topActivity)){
-                            Toast.makeText(getApplicationContext(), R.string.app_running_not_in_time, Toast.LENGTH_LONG).show();
+//                            Toast.makeText(getApplicationContext(), R.string.app_running_not_in_time, Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             getApplicationContext().startActivity(intent);
@@ -168,7 +169,7 @@ public class LockAppService extends Service {
     }
 
     private boolean isTopActivityNeed2Stop(String topActivity){
-        Cursor cursor = db.rawQuery("select start_time_hour,start_time_minute,end_time_hour,end_time_minute from application_control_table where pkg=?", new String[]{topActivity});
+        Cursor cursor = db.rawQuery("select start_time_hour,start_time_minute,end_time_hour,end_time_minute from application_control_table where pkg=? and use_flag=?", new String[]{topActivity, "true"});
         if(cursor.moveToNext()){
             String startTimeHour = cursor.getString(0);
             String startTimeMinute = cursor.getString(1);
@@ -177,13 +178,13 @@ public class LockAppService extends Service {
             String tS = startTimeHour.split("\\:")[0]+":"+startTimeMinute;
             String tE = endTimeHour.split("\\:")[0]+":"+endTimeMinute;
             try {
-                if(!PhoneUtil.isApplicationAvaiableTimeInZone(PhoneUtil.getTimeHHMM2Long(tS),PhoneUtil.getTimeHHMM2Long(tE),PhoneUtil.getCurrentTime())){
-                    return true;
+                if(PhoneUtil.isApplicationAvaiableTimeInZone(PhoneUtil.getTimeHHMM2Long(tS),PhoneUtil.getTimeHHMM2Long(tE),PhoneUtil.getCurrentTime())){
+                    return false;
                 }
             }catch (Exception e){
                 Log.e(TAG, e.getMessage());
             }
         }
-        return false;
+        return true;
     }
 }
