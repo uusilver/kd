@@ -26,6 +26,7 @@ import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.PhoneUtil;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -114,14 +115,13 @@ public class LockAppService extends Service {
      * 模拟从服务器解析数据
      */
     private void checkForUpdate() {
-        try {
             //模拟耗时
-            Thread.sleep(1000);
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     //check previliedge
                     String topActivity = getTopActivty();
+                    Log.e("TopActivity Name", new Date().toString()+":"+topActivity);
                     if(!topActivity.equals("org.tmind.kiteui")){
                         if(isTopActivityNeed2Stop(topActivity)){
                             Toast.makeText(getApplicationContext(), R.string.app_running_not_in_time, Toast.LENGTH_LONG).show();
@@ -134,14 +134,10 @@ public class LockAppService extends Service {
 
                 }
             });
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
+    String topPackageName="org.tmind.kiteui";
     public String getTopActivty() {
-        String topPackageName="org.tmind.kiteui";
         //android5.0以上获取方式
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             UsageStatsManager mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
@@ -156,7 +152,6 @@ public class LockAppService extends Service {
                 }
                 if (mySortedMap != null && !mySortedMap.isEmpty()) {
                     topPackageName = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
-                    Log.e("TopPackage Name", topPackageName);
                     //
                 }
             }
