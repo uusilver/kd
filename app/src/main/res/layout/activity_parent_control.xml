@@ -10,7 +10,11 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.tmind.kiteui.ParentControlActivity">
-
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sys_permission_setting_btn"
+        android:text="设置应用权限"/>
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"

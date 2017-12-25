@@ -12,9 +12,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +33,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.tmind.kiteui.model.PackageInfoModel;
 import org.tmind.kiteui.utils.DBHelper;
@@ -50,6 +53,8 @@ public class ParentControlActivity extends AppCompatActivity {
     private RelativeLayout layout;
     //installed package
     private PackageManager packageManager = null;
+
+    private Button systemSettingBtn;
 
     //sqlite db object
     SQLiteDatabase db;
@@ -94,6 +99,20 @@ public class ParentControlActivity extends AppCompatActivity {
                     handler.sendEmptyMessage(0);
             }
         }.start();
+
+        systemSettingBtn = (Button)findViewById(R.id.sys_permission_setting_btn);
+        systemSettingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }else {
+                    Toast.makeText(context, "您的安卓版本不需要进行设置", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     @Override
