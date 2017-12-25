@@ -108,6 +108,9 @@ public class MainActivity extends Activity {
 
     @Override
     public void onResume(){
+        if (ifNeedGotoInitActivity()) {
+            route2Activity(InitialSettingActivity.class);
+        }
         //restart lock app service
         stopService(lockAppService);
         startService(lockAppService);
