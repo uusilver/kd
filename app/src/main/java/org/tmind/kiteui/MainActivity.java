@@ -512,7 +512,8 @@ public class MainActivity extends Activity {
                     "start_time_hour varchar(50), " +
                     "start_time_minute varchar(50), " +
                     "end_time_hour varchar(50), " +
-                    "end_time_minute varchar(50))");
+                    "end_time_minute varchar(50), " +
+                    "system_flag varchar(50))");
         }
         //重置密码
         if (!checkIfTableExist(resetPasswordTable)) {

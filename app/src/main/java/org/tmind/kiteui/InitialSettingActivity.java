@@ -118,7 +118,8 @@ public class InitialSettingActivity extends AppCompatActivity {
 
                 String insertEmergencePhoneNo = "INSERT INTO emergence_phone_table (phone_no)  VALUES ('"+emergencePhoneNoStr+"')";
                 db.execSQL(insertEmergencePhoneNo);
-                Intent intent = new Intent(InitialSettingActivity.this, MainActivity.class);
+                //进入家长设置页面
+                Intent intent = new Intent(InitialSettingActivity.this, ParentControlActivity.class);
                 startActivity(intent);
         }
     }

@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import org.tmind.kiteui.MainActivity;
 import org.tmind.kiteui.R;
+import org.tmind.kiteui.model.PackageInfoModel;
+import org.tmind.kiteui.utils.CacheUtil;
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.PhoneUtil;
 
@@ -33,7 +35,7 @@ import java.util.TreeMap;
 
 public class LockAppService extends Service {
 
-    private static final String TAG = "LockAppService" ;
+    private static final String TAG = "LockAppService";
     private HandlerThread mCheckAppLock;
     private Handler mCheckAppHandler;
     private boolean checkFlag;
@@ -116,28 +118,29 @@ public class LockAppService extends Service {
      * 模拟从服务器解析数据
      */
     private void checkForUpdate() {
-            //模拟耗时
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    //check previliedge
-                    String topActivity = getTopActivty();
-                    Log.e("TopActivity Name", new Date().toString()+":"+topActivity);
-                    if(!topActivity.equals("org.tmind.kiteui")){
-                        if(isTopActivityNeed2Stop(topActivity)){
+        //模拟耗时
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                //check previliedge
+                String topActivity = getTopActivty();
+                Log.e("TopActivity Name", new Date().toString() + ":" + topActivity);
+                if (!topActivity.equals("org.tmind.kiteui") && !topActivity.startsWith("com.android")) {
+                    if (isTopActivityNeed2Stop(topActivity)) {
 //                            Toast.makeText(getApplicationContext(), R.string.app_running_not_in_time, Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            getApplicationContext().startActivity(intent);
-                        }
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getApplicationContext().startActivity(intent);
                     }
-
-
                 }
-            });
+
+
+            }
+        });
     }
 
-    String topPackageName="org.tmind.kiteui";
+    String topPackageName = "org.tmind.kiteui";
+
     public String getTopActivty() {
         //android5.0以上获取方式
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -159,8 +162,8 @@ public class LockAppService extends Service {
 
         }
         //android5.0以下获取方式
-        else{
-            ActivityManager activityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+        else {
+            ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(1);
             ActivityManager.RunningTaskInfo taskInfo = tasks.get(0);
             topPackageName = taskInfo.topActivity.getPackageName();
@@ -168,23 +171,51 @@ public class LockAppService extends Service {
         return topPackageName;
     }
 
-    private boolean isTopActivityNeed2Stop(String topActivity){
-        Cursor cursor = db.rawQuery("select start_time_hour,start_time_minute,end_time_hour,end_time_minute from application_control_table where pkg=? and use_flag=?", new String[]{topActivity, "true"});
-        if(cursor.moveToNext()){
-            String startTimeHour = cursor.getString(0);
-            String startTimeMinute = cursor.getString(1);
-            String endTimeHour = cursor.getString(2);
-            String endTimeMinute = cursor.getString(3);
-            String tS = startTimeHour.split("\\:")[0]+":"+startTimeMinute;
-            String tE = endTimeHour.split("\\:")[0]+":"+endTimeMinute;
+    private boolean isTopActivityNeed2Stop(String topActivity) {
+        CacheUtil instance = CacheUtil.getInstance();
+        if (instance.isCacheNull()) {
+            refreshCache(instance);
+        }
+        PackageInfoModel model = instance.get(topActivity);
+        if (model != null) {
+            //系统应用不停止
+            if (model.getSystemFlag() != null && "true".equals(model.getSystemFlag())) {
+                return false;
+            }
+            String startTimeHour = model.getStartTimeHour();
+            String startTimeMinute = model.getStartTimeMinute();
+            String endTimeHour = model.getEndTimeHour();
+            String endTimeMinute = model.getEndTimeMinute();
+            String tS = startTimeHour.split("\\:")[0] + ":" + startTimeMinute;
+            String tE = endTimeHour.split("\\:")[0] + ":" + endTimeMinute;
             try {
-                if(PhoneUtil.isApplicationAvaiableTimeInZone(PhoneUtil.getTimeHHMM2Long(tS),PhoneUtil.getTimeHHMM2Long(tE),PhoneUtil.getCurrentTime())){
+
+                //可运行状态时间内，不停止
+                if (PhoneUtil.isApplicationAvaiableTimeInZone(PhoneUtil.getTimeHHMM2Long(tS), PhoneUtil.getTimeHHMM2Long(tE), PhoneUtil.getCurrentTime())) {
                     return false;
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }
+
         }
         return true;
+    }
+
+    private void refreshCache(CacheUtil instance) {
+        Cursor cursor = db.rawQuery("select application_name,pkg, use_flag,start_time_hour,start_time_minute,end_time_hour,end_time_minute,system_flag from application_control_table where use_flag=? or system_flag=?", new String[]{"true", "true"});
+        while (cursor.moveToNext()) {
+            PackageInfoModel model = new PackageInfoModel();
+            model.setApplicationName(cursor.getString(0));
+            model.setPkg(cursor.getString(1));
+            model.setAllowFlag(cursor.getString(2));
+            model.setStartTimeHour(cursor.getString(3));
+            model.setStartTimeMinute(cursor.getString(4));
+            model.setEndTimeHour(cursor.getString(5));
+            model.setEndTimeMinute(cursor.getString(6));
+            model.setSystemFlag(cursor.getString(7));
+            model.setOldAppFlag(true);
+            instance.put(model.getPkg(), model);
+        }
     }
 }

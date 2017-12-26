@@ -15,6 +15,13 @@
         android:layout_height="wrap_content"
         android:id="@+id/sys_permission_setting_btn"
         android:text="设置应用权限"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/parent_control_confirm_btn"
+        android:text="完成"/>
+
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"

@@ -6,6 +6,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -36,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.tmind.kiteui.model.PackageInfoModel;
+import org.tmind.kiteui.utils.CacheUtil;
 import org.tmind.kiteui.utils.DBHelper;
 
 import java.util.ArrayList;
@@ -55,6 +58,7 @@ public class ParentControlActivity extends AppCompatActivity {
     private PackageManager packageManager = null;
 
     private Button systemSettingBtn;
+    private Button confirmBtn;
 
     //sqlite db object
     SQLiteDatabase db;
@@ -113,6 +117,16 @@ public class ParentControlActivity extends AppCompatActivity {
                 }
             }
         });
+
+        confirmBtn = (Button)findViewById(R.id.parent_control_confirm_btn);
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -129,7 +143,7 @@ public class ParentControlActivity extends AppCompatActivity {
 
     private void initAppInfo() {
         //get all saved from database;
-        Cursor cursor = db.rawQuery("select application_name,pkg, use_flag,start_time_hour,start_time_minute,end_time_hour,end_time_minute from application_control_table", null);
+        Cursor cursor = db.rawQuery("select application_name,pkg, use_flag,start_time_hour,start_time_minute,end_time_hour,end_time_minute,system_flag from application_control_table", null);
         while (cursor.moveToNext()){
             PackageInfoModel model = new PackageInfoModel();
             model.setApplicationName(cursor.getString(0));
@@ -139,6 +153,7 @@ public class ParentControlActivity extends AppCompatActivity {
             model.setStartTimeMinute(cursor.getString(4));
             model.setEndTimeHour(cursor.getString(5));
             model.setEndTimeMinute(cursor.getString(6));
+            model.setSystemFlag(cursor.getString(7));
             model.setOldAppFlag(true);
             tempArray.add(model);
         }
@@ -159,14 +174,29 @@ public class ParentControlActivity extends AppCompatActivity {
             String tempCls = resolveInfo.activityInfo.name;
             realArray.add(comparePackgeModelInfo(tempPackageName,tempDrawable,tempPkg,tempCls));
         }
+
+        //判断是否是系统应用
+        List<PackageInfo> packageInfos = packageManager.getInstalledPackages(0);
+        for(PackageInfoModel model : realArray){
+            for(PackageInfo info : packageInfos){
+                if(info.packageName.equals(model.getPkg())){
+                    if ((info.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0 ){
+                        //系统程序
+                        model.setSystemFlag("true");
+                    }else{
+                        model.setSystemFlag("false");
+                    }
+                }
+            }
+        }
         //insert into database if new
         for(PackageInfoModel model : realArray){
             if(!model.isOldAppFlag()){
-                String insertSql = "insert into application_control_table (application_name, pkg, use_flag, start_time_hour, start_time_minute, end_time_hour, end_time_minute) VALUES (?,?,?,?,?,?,?)";
-                db.execSQL(insertSql, new Object[]{model.getApplicationName(), model.getPkg(), model.getAllowFlag(),model.getStartTimeHour(),model.getStartTimeMinute(), model.getEndTimeHour(), model.getEndTimeMinute()});
+                String insertSql = "insert into application_control_table (application_name, pkg, use_flag, start_time_hour, start_time_minute, end_time_hour, end_time_minute, system_flag) VALUES (?,?,?,?,?,?,?,?)";
+                db.execSQL(insertSql, new Object[]{model.getApplicationName(), model.getPkg(), model.getAllowFlag(),model.getStartTimeHour(),model.getStartTimeMinute(), model.getEndTimeHour(), model.getEndTimeMinute(), model.getSystemFlag()});
             }
         }
-
+        refreshCache();
         //finish
     }
 
@@ -277,6 +307,7 @@ public class ParentControlActivity extends AppCompatActivity {
                                 String selectedStartTimeHour = (String)startTimeHour.getItemAtPosition(sprinnerItemPos);
                                 realArray.get(position).setStartTimeHour(selectedStartTimeHour);
                                 db.execSQL("update application_control_table set start_time_hour='"+selectedStartTimeHour+"' where application_name='"+realArray.get(position).getApplicationName()+"'");
+                                refreshCache();
                     }
 
                     @Override
@@ -291,6 +322,7 @@ public class ParentControlActivity extends AppCompatActivity {
                             String selectedStartMinute = (String)startTimeMinute.getItemAtPosition(sprinnerItemPos);
                             realArray.get(position).setStartTimeMinute(selectedStartMinute);
                             db.execSQL("update application_control_table set start_time_minute='"+selectedStartMinute+"' where application_name='"+realArray.get(position).getApplicationName()+"'");
+                            refreshCache();
                     }
 
                     @Override
@@ -306,6 +338,7 @@ public class ParentControlActivity extends AppCompatActivity {
                             String selectEndTimeHour = (String)endTimeHour.getItemAtPosition(sprinnerItemPos);
                             realArray.get(position).setEndTimeHour(selectEndTimeHour);
                             db.execSQL("update application_control_table set end_time_hour='"+selectEndTimeHour+"' where application_name='"+realArray.get(position).getApplicationName()+"'");
+                            refreshCache();
                     }
 
                     @Override
@@ -321,6 +354,7 @@ public class ParentControlActivity extends AppCompatActivity {
                             String selectedEndTimeMinute = (String)endTimeMinute.getItemAtPosition(sprinnerItemPos);
                             realArray.get(position).setEndTimeMinute(selectedEndTimeMinute);
                             db.execSQL("update application_control_table set end_time_minute='"+selectedEndTimeMinute+"' where application_name='"+realArray.get(position).getApplicationName()+"'");
+                            refreshCache();
                     }
 
                     @Override
@@ -340,6 +374,7 @@ public class ParentControlActivity extends AppCompatActivity {
                                 useFlag = "false";
                             }
                         db.execSQL("update application_control_table set use_flag='"+useFlag+"' where application_name='"+realArray.get(position).getApplicationName()+"'");
+                        refreshCache();
                     }
                 });
 
@@ -355,6 +390,7 @@ public class ParentControlActivity extends AppCompatActivity {
                                     public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件
                                         // delete app
                                         db.execSQL("delete from application_control_table where application_name='"+realArray.get(position).getApplicationName()+"'");
+                                        refreshCache();
                                         Uri uri = Uri.parse("package:" + realArray.get(position).getPkg());
                                         Intent intent = new Intent(Intent.ACTION_DELETE, uri);
                                         context.startActivity(intent);
@@ -418,6 +454,24 @@ public class ParentControlActivity extends AppCompatActivity {
                     return index;
             }
             return -1;
+        }
+    }
+
+    private void refreshCache(){
+        CacheUtil instance = CacheUtil.getInstance();
+        Cursor cursor = db.rawQuery("select application_name,pkg, use_flag,start_time_hour,start_time_minute,end_time_hour,end_time_minute,system_flag from application_control_table",null);
+        while (cursor.moveToNext()){
+            PackageInfoModel model = new PackageInfoModel();
+            model.setApplicationName(cursor.getString(0));
+            model.setPkg(cursor.getString(1));
+            model.setAllowFlag(cursor.getString(2));
+            model.setStartTimeHour(cursor.getString(3));
+            model.setStartTimeMinute(cursor.getString(4));
+            model.setEndTimeHour(cursor.getString(5));
+            model.setEndTimeMinute(cursor.getString(6));
+            model.setSystemFlag(cursor.getString(7));
+            model.setOldAppFlag(true);
+            instance.put(model.getPkg(), model);
         }
     }
 

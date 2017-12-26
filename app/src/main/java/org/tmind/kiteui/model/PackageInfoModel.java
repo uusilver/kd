@@ -15,6 +15,7 @@ public class PackageInfoModel {
     private String startTimeMinute;
     private String endTimeHour;
     private String endTimeMinute;
+    private String systemFlag;
 
     private String pkg;
     private String mainCls;
@@ -100,6 +101,14 @@ public class PackageInfoModel {
 
     public void setOldAppFlag(boolean oldAppFlag) {
         this.oldAppFlag = oldAppFlag;
+    }
+
+    public String getSystemFlag() {
+        return systemFlag;
+    }
+
+    public void setSystemFlag(String systemFlag) {
+        this.systemFlag = systemFlag;
     }
 
     @Override
