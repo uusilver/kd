@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import org.tmind.kiteui.R;
+import org.tmind.kiteui.utils.LogUtil;
 
 /**
  * Created by vali on 12/20/2017.
@@ -17,7 +18,7 @@ import org.tmind.kiteui.R;
 
 public class NormalSettingFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener,Preference.OnPreferenceClickListener{
 
-    private final static String TAG = "NormalSettingFragment";
+    private final static String TAG = "NormalSettingFragment.class";
     private  CharSequence[] theme;
     private  SharedPreferences sharedPreferences;
 
@@ -54,8 +55,7 @@ public class NormalSettingFragment extends PreferenceFragment implements Prefere
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-
-        System.out.println(preference.getKey());
+        LogUtil.d(TAG, "Preference Click");
         return false;
     }
 

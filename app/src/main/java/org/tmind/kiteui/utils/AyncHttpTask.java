@@ -16,7 +16,7 @@ import java.util.Map;
  */
 
 public class AyncHttpTask extends AsyncTask<String, String, String> {
-
+    private static final String TAG = "AyncHttpTask.class";
     @Override
     protected String doInBackground(String... params) {
         try {
@@ -53,10 +53,10 @@ public class AyncHttpTask extends AsyncTask<String, String, String> {
                 os.close();
                 // 返回字符串
                 String result = new String(os.toByteArray());
-                System.out.println("***************" + result
+                LogUtil.d(TAG,"***************" + result
                         + "******************");
             } else {
-                System.out.println("------------------链接失败-----------------");
+                LogUtil.d(TAG, "------------------链接失败-----------------");
             }
 
         } catch (Exception e) {

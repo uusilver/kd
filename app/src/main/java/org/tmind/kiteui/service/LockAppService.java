@@ -1,11 +1,9 @@
 package org.tmind.kiteui.service;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,19 +13,15 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.widget.Toast;
 
 import org.tmind.kiteui.MainActivity;
-import org.tmind.kiteui.R;
 import org.tmind.kiteui.model.PackageInfoModel;
 import org.tmind.kiteui.utils.CacheUtil;
 import org.tmind.kiteui.utils.DBHelper;
+import org.tmind.kiteui.utils.LogUtil;
 import org.tmind.kiteui.utils.PhoneUtil;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
@@ -35,7 +29,7 @@ import java.util.TreeMap;
 
 public class LockAppService extends Service {
 
-    private static final String TAG = "LockAppService";
+    private static final String TAG = "LockAppService.class";
     private HandlerThread mCheckAppLock;
     private Handler mCheckAppHandler;
     private boolean checkFlag;
@@ -66,7 +60,7 @@ public class LockAppService extends Service {
      */
     @Override
     public void onCreate() {
-        System.out.println("onCreate invoke");
+        LogUtil.d(TAG, "onCreate invoke");
         checkFlag = true;
         initBackThread();
         mCheckAppHandler.sendEmptyMessage(MSG_UPDATE_INFO);
@@ -84,7 +78,7 @@ public class LockAppService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        System.out.println("onStartCommand invoke");
+        LogUtil.d(TAG, "onStartCommand invoke");
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -93,7 +87,7 @@ public class LockAppService extends Service {
      */
     @Override
     public void onDestroy() {
-        System.out.println("onDestroy invoke");
+        LogUtil.d(TAG,"onDestroy invoke");
         mCheckAppLock.getLooper().quit();
         super.onDestroy();
     }
@@ -124,7 +118,7 @@ public class LockAppService extends Service {
             public void run() {
                 //check previliedge
                 String topActivity = getTopActivty();
-                Log.e("TopActivity Name", new Date().toString() + ":" + topActivity);
+                LogUtil.e("TopActivity Name", new Date().toString() + ":" + topActivity);
                 if (!topActivity.equals("org.tmind.kiteui") && !topActivity.startsWith("com.android")) {
                     if (isTopActivityNeed2Stop(topActivity)) {
 //                            Toast.makeText(getApplicationContext(), R.string.app_running_not_in_time, Toast.LENGTH_LONG).show();
@@ -195,7 +189,7 @@ public class LockAppService extends Service {
                     return false;
                 }
             } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
+                LogUtil.e(TAG, e.getMessage());
             }
 
         }

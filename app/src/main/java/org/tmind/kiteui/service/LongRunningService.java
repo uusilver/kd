@@ -12,6 +12,7 @@ import android.util.Log;
 
 import org.tmind.kiteui.task.KillProcessTask;
 import org.tmind.kiteui.task.ShowAlertMsgTask;
+import org.tmind.kiteui.utils.LogUtil;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -24,7 +25,7 @@ import java.util.Timer;
 
 public class LongRunningService extends Service {
 
-    private final static String TAG = "Background Service";
+    private final static String TAG = "LongRunningService.class";
 
     private Timer killProcessTimer;
 
@@ -76,7 +77,7 @@ public class LongRunningService extends Service {
 
     @Override
     public void onDestroy(){
-        Log.d(TAG, "CAll destory function, timer caceled");
+        LogUtil.d(TAG, "CAll destory function, timer caceled");
         if(killProcessTimer != null){
             killProcessTimer.cancel();
         }

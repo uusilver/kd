@@ -20,7 +20,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +39,7 @@ import android.widget.Toast;
 import org.tmind.kiteui.model.PackageInfoModel;
 import org.tmind.kiteui.utils.CacheUtil;
 import org.tmind.kiteui.utils.DBHelper;
+import org.tmind.kiteui.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -402,7 +402,7 @@ public class ParentControlActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {//响应事件
                                 // TODO Auto-generated method stub
-                                Log.i("alertdialog"," 请保存数据！");
+                                LogUtil.i("alertdialog"," 请保存数据！");
                             }
                         }).show();//在按键响应事件中显示此对话框
 

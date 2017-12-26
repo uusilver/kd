@@ -5,9 +5,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
-import android.util.Log;
 
 import org.tmind.kiteui.MainActivity;
+import org.tmind.kiteui.utils.LogUtil;
 
 import java.util.List;
 import java.util.TimerTask;
@@ -29,7 +29,7 @@ public class KillProcessTask extends TimerTask {
     @Override
     public void run() {
         Looper.prepare();
-            Log.d(TAG, "Will kill pkg:"+pkg);
+            LogUtil.d(TAG, "Will kill pkg:"+pkg);
             killProcess(context, pkg);
         Looper.loop();
     }
@@ -40,7 +40,6 @@ public class KillProcessTask extends TimerTask {
         // 通过调用ActivityManager的getRunningAppServicees()方法获得系统里所有正在运行的进程
         List<ActivityManager.RunningServiceInfo> runServiceList = mActivityManager
                 .getRunningServices(50);
-        System.out.println(runServiceList.size());
         // ServiceInfo Model类 用来保存所有进程信息
         for (ActivityManager.RunningServiceInfo runServiceInfo : runServiceList) {
             ComponentName serviceCMP = runServiceInfo.service;

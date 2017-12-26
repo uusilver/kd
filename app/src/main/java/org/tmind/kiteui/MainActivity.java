@@ -20,8 +20,6 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -32,14 +30,13 @@ import android.widget.Toast;
 
 import org.tmind.kiteui.model.MertoItemView;
 import org.tmind.kiteui.service.LockAppService;
-import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.AyncHttpTask;
+import org.tmind.kiteui.utils.DBHelper;
+import org.tmind.kiteui.utils.LogUtil;
 import org.tmind.kiteui.utils.PhoneUtil;
 import org.tmind.kiteui.utils.TimeUtils;
 
-import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @ClassName: MertoActivity
@@ -209,7 +206,7 @@ public class MainActivity extends Activity {
                 String url = remoteServerAddr + "/rest/insertHelpInfo/" + stringKeepedInRemoteServer;
                 new AyncHttpTask().execute(url);
                 //TODO send 2 server
-                Log.d(TAG, stringKeepedInRemoteServer);
+                LogUtil.d(TAG, stringKeepedInRemoteServer);
                 //TODO get setted help number from SQLite
                 call(emergenceCallNo, true);
                 return true;
@@ -377,7 +374,7 @@ public class MainActivity extends Activity {
                         locationListener);
             }
         } catch (SecurityException e) {
-            Log.w(TAG, e.getMessage());
+            LogUtil.w(TAG, e.getMessage());
             return null;
         }
         //lng+lat
@@ -393,7 +390,7 @@ public class MainActivity extends Activity {
             tel = tm.getLine1Number();//手机号
             imei = tm.getSimSerialNumber();
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            LogUtil.e(TAG, e.getMessage());
         }
         return tel + "+" + imei;
     }
@@ -471,20 +468,17 @@ public class MainActivity extends Activity {
 
         @Override
         public void onProviderEnabled(String provider) {
-            Log.d(TAG, "onProviderEnabled: " + provider + ".." + Thread.currentThread().getName());
+            //do noting
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-            Log.d(TAG, "onProviderDisabled: " + provider + ".." + Thread.currentThread().getName());
+            //do noting
         }
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.d(TAG, "onLocationChanged: " + ".." + Thread.currentThread().getName());
-            //如果位置发生变化,重新显示
-            //TODO if location changed, do we need to save?
-//            showLocation(location);
+            //do noting
         }
     };
 

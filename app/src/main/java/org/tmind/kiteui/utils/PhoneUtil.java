@@ -7,12 +7,10 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -30,7 +28,7 @@ public class PhoneUtil {
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             imei = tm.getSimSerialNumber();
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            LogUtil.e(TAG, e.getMessage());
         }
         return imei;
     }
@@ -41,7 +39,7 @@ public class PhoneUtil {
             TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             tel = tm.getLine1Number();//手机号
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            LogUtil.e(TAG, e.getMessage());
         }
         return tel;
 
@@ -67,9 +65,9 @@ public class PhoneUtil {
             location = locationManager
                     .getLastKnownLocation(provider);
         } catch (SecurityException e1) {
-            Log.w(TAG, e1.getMessage());
+            LogUtil.w(TAG, e1.getMessage());
         } catch (Exception e) {
-            Log.w(TAG, e.getMessage());
+            LogUtil.w(TAG, e.getMessage());
         }
         //lng+lat
         if (location != null) {

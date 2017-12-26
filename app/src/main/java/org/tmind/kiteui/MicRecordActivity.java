@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,12 +32,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.tmind.kiteui.utils.AudioRecoderUtils;
+import org.tmind.kiteui.utils.LogUtil;
 import org.tmind.kiteui.utils.PopupWindowFactory;
 import org.tmind.kiteui.utils.TimeUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -158,7 +157,7 @@ public class MicRecordActivity extends AppCompatActivity implements View.OnClick
                         if (selectid.get(i).equals(array.get(j))) {
                             // TODO delete file, do we need a alert window?
                             String filePath = FILE_PATH + array.get(i);
-                            Log.d(TAG, filePath);
+                            LogUtil.d(TAG, filePath);
                             deleteAmrFile(filePath);
                             array.remove(j);
                         }
