@@ -150,7 +150,10 @@ public class UpdateManager
 		// 构造对话框
 		Builder builder = new Builder(mContext);
 		builder.setTitle(R.string.soft_update_title);
-		builder.setMessage(R.string.soft_update_info);
+		String updateMsg = remoteUpdateModel.getTag().trim().replaceAll(" ","\n");
+		String msgTitle = mContext.getResources().getString(R.string.soft_update_info);
+		String fullMsg = msgTitle+"\n"+updateMsg;
+		builder.setMessage(fullMsg);
 		// 更新
 		builder.setPositiveButton(R.string.soft_update_updatebtn, new OnClickListener()
 		{
