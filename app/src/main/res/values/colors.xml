@@ -5,7 +5,9 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorGray">#33000000</color>
     <color name="lemonchiffon">#FFCC33</color>
-    
+    <color name="white">#FFFFFF</color>
+    <color name="blue">#3A5FCD</color>
+
     <color name="theme_blue_bkg">#64848b</color>
     <color name="theme_blue_telephoneItem">#d0e9ff</color>
     <color name="theme_blue_smsItem">#1db0b8</color>
