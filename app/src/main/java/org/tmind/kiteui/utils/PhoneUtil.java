@@ -10,6 +10,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.telephony.TelephonyManager;
 
+import org.tmind.kiteui.R;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -108,16 +110,4 @@ public class PhoneUtil {
         return PhoneUtil.getTimeHHMM2Long(sdf.format(new Date()));
     }
 
-    public static int getVersion(Context context) {
-        try {
-            PackageManager manager = context.getPackageManager();
-            PackageInfo info = manager.getPackageInfo(context.getPackageName(),
-                    0);
-            int versioncode = info.versionCode;
-            return versioncode;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
 }

@@ -493,7 +493,7 @@ public class ParentControlActivity extends AppCompatActivity {
     }
 
     private void checkApkUpdate() {
-        int currentVersionCode = PhoneUtil.getVersion(context);
+        int currentVersionCode = Integer.valueOf(context.getResources().getString(R.string.app_version_code));
         new XmlParse("http://106.14.70.75:8004/bee/app/app_config.xml", currentVersionCode).start();
 
     }
