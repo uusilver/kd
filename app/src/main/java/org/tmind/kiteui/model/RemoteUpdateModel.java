@@ -10,6 +10,7 @@ public class RemoteUpdateModel {
     private String name;
     private String tag;
     private String url;
+    private String installName;
 
     public String getVersion() {
         return version;
@@ -41,5 +42,13 @@ public class RemoteUpdateModel {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getInstallName() {
+        return installName;
+    }
+
+    public void setInstallName(String installName) {
+        this.installName = installName;
     }
 }

@@ -1,6 +1,7 @@
 package org.tmind.kiteui;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -32,12 +33,14 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.tmind.kiteui.manager.UpdateManager;
 import org.tmind.kiteui.model.PackageInfoModel;
 import org.tmind.kiteui.model.RemoteUpdateModel;
 import org.tmind.kiteui.utils.CacheUtil;
@@ -48,6 +51,7 @@ import org.tmind.kiteui.utils.TimeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -519,6 +523,7 @@ public class ParentControlActivity extends AppCompatActivity {
                 parser.setInput(in, "UTF-8");
                 int eventType = parser.getEventType();
                 RemoteUpdateModel remoteUpdateModel = new RemoteUpdateModel();
+                remoteUpdateModel.setInstallName("kiteui_install_package"+new Date().getTime()+".apk");
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     if (eventType == XmlPullParser.START_TAG) {
                         String name = parser.getName();
@@ -537,32 +542,12 @@ public class ParentControlActivity extends AppCompatActivity {
                     }
                     eventType = parser.next();
                 }
-
-                if(currentVersionCode < Integer.valueOf(remoteUpdateModel.getVersion())){
-                    //download dialog
-                    new AlertDialog.Builder(context).setTitle(R.string.download_version)
-                            .setIcon(R.drawable.kite_ui_download)
-                            .setPositiveButton(R.string.confirm_button, new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // 点击“确认”后的操作
-
-
-                                }
-                            })
-                            .setNegativeButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // 点击“返回”后的操作,这里不设置没有任何操作
-                                }
-                            }).show();
-                }
+                UpdateManager updateManager = new UpdateManager(context, remoteUpdateModel, currentVersionCode);
+                updateManager.checkUpdate();
             } catch (Exception e) {
                 LogUtil.d(TAG, e.getMessage());
             }
             Looper.loop();
         }
-    }
+    }//end of thread
 }
