@@ -2,6 +2,8 @@ package org.tmind.kiteui.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -104,5 +106,18 @@ public class PhoneUtil {
 
     public static long getCurrentTime() throws ParseException {
         return PhoneUtil.getTimeHHMM2Long(sdf.format(new Date()));
+    }
+
+    public static int getVersion(Context context) {
+        try {
+            PackageManager manager = context.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(context.getPackageName(),
+                    0);
+            int versioncode = info.versionCode;
+            return versioncode;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

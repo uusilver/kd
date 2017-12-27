@@ -59,4 +59,5 @@
         <item>40</item>
         <item>50</item>
     </string-array>
+    <string name="download_version">检测到新版本</string>
 </resources>
