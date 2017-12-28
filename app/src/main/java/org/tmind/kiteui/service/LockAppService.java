@@ -119,23 +119,27 @@ public class LockAppService extends Service {
                 //check previliedge
                 String topActivity = getTopActivty();
                 LogUtil.e("TopActivity Name", new Date().toString() + ":" + topActivity);
+                if(topActivity.contains("settings")){
+                    route2MainScreen();
+                }
                 if (!topActivity.equals("org.tmind.kiteui") && !topActivity.startsWith("com.android")) {
                     if (isTopActivityNeed2Stop(topActivity)) {
 //                            Toast.makeText(getApplicationContext(), R.string.app_running_not_in_time, Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        getApplicationContext().startActivity(intent);
+                            route2MainScreen();
                     }
                 }
-
-
             }
         });
     }
 
+    private void route2MainScreen(){
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        getApplicationContext().startActivity(intent);
+    }
     String topPackageName = "org.tmind.kiteui";
 
-    public String getTopActivty() {
+    private String getTopActivty() {
         //android5.0以上获取方式
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             UsageStatsManager mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
