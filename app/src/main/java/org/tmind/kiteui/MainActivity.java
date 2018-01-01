@@ -23,6 +23,7 @@ import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 
 import org.tmind.kiteui.model.MertoItemView;
 import org.tmind.kiteui.service.LockAppService;
+import org.tmind.kiteui.utils.AyncHttpPostTask;
 import org.tmind.kiteui.utils.AyncHttpTask;
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.LogUtil;
