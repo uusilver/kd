@@ -14,14 +14,23 @@ import java.net.URL;
  * Created by vali on 1/1/2018.
  */
 
-public class AyncHttpPostTask extends AsyncTask<String,Void,String> {
+public class AyncHttpPostTask extends Thread {
+    private static final String TAG = "AyncHttpPostTask";
+    private String accessAdr;
+    private String params;
+
+    public AyncHttpPostTask(String accessAdr, String params){
+        this.accessAdr = accessAdr;
+        this.params = params;
+    }
+
     @Override
-    protected String doInBackground(String... strings) {
+    public void run(){
         HttpURLConnection con=null;
         InputStream is=null;
         StringBuilder adb=new StringBuilder();
         try {
-            URL url=new URL(strings[0]);
+            URL url=new URL(accessAdr);
             con= (HttpURLConnection) url.openConnection();
             con.setConnectTimeout(5 * 1000);
             con.setReadTimeout(5 * 1000);
@@ -36,7 +45,6 @@ public class AyncHttpPostTask extends AsyncTask<String,Void,String> {
             con.setRequestProperty("Content-type",
                     "application/x-www-form-urlencoded");
             //params应该是这样的样式=》option=getUserName&uName=jerehedu.没有问号？？？
-            String params=strings[1];
             OutputStream os=con.getOutputStream();
             os.write(params.getBytes());
             os.flush();
@@ -48,9 +56,8 @@ public class AyncHttpPostTask extends AsyncTask<String,Void,String> {
                 while ((next=is.read(b))>0){
                     adb.append(new String(b,0,next));
                 }
-
+                LogUtil.d(TAG, adb.toString());
             }
-
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -68,12 +75,6 @@ public class AyncHttpPostTask extends AsyncTask<String,Void,String> {
                 con.disconnect();
             }
         }
-        return adb.toString();
     }
 
-    @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
-//        show.setText(s);
-    }
 }

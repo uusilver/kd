@@ -192,9 +192,8 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             String result = writer.toString();
             sb.append(result);
             //远程保存到服务器
-            String info = sb.toString();
-            saveExceptionInfo2Server(info);
-            String fileName = writeFile(info);
+            saveExceptionInfo2Server(getCrashInfo(ex));
+            String fileName = writeFile(sb.toString());
             return fileName;
         } catch (Exception e) {
             Log.e(TAG, "an error occured while writing file...", e);
@@ -231,12 +230,17 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     }
 
     private void sendInfoInNewThread(final String remoteUrl, final String param){
-        new Thread(){
-            @Override
-            public void run(){
-                new AyncHttpPostTask().execute(remoteUrl, param);
-            }
-        }.start();
+        new AyncHttpPostTask(remoteUrl,param).start();
+    }
+
+    private String getCrashInfo(Throwable ex){
+        StringBuilder sb = new StringBuilder().append(ex.getMessage());
+        sb.append("| Root Case:");
+        if(ex.getStackTrace().length>0){
+            sb.append(ex.getStackTrace()[0].toString());
+        }
+        sb.append("| current Version no:"+mContext.getResources().getString(R.string.app_version_code));
+        return sb.toString();
     }
 
     public static String getGlobalpath() {
