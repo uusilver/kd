@@ -240,7 +240,11 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             sb.append(ex.getStackTrace()[0].toString());
         }
         sb.append("| current Version no:"+mContext.getResources().getString(R.string.app_version_code));
-        return sb.toString();
+        String result = sb.toString();
+        if(result.length()>2900){
+            result = result.substring(0,2900);
+        }
+        return result;
     }
 
     public static String getGlobalpath() {
