@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.util.Log;
 
 import org.tmind.kiteui.task.KillProcessTask;
 import org.tmind.kiteui.task.ShowAlertMsgTask;
+import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.LogUtil;
 
 import java.util.Calendar;
@@ -32,6 +34,13 @@ public class LongRunningService extends Service {
     private Timer alertMsgTimer;
 
     private Context context;
+
+    private SQLiteDatabase db;
+
+    @Override
+    public void onCreate(){
+        db = new DBHelper(getApplicationContext()).getDbInstance();
+    }
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {

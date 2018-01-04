@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="2"
-    package="org.tmind.kiteui">
+    package="org.tmind.kiteui"
+    android:versionCode="2">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -21,7 +21,7 @@
     <application
         android:name=".KiteUIApplication"
         android:allowBackup="true"
-        android:icon="@drawable/kite_ui_logo"
+        android:icon="@drawable/kite_ui_lancher_icon2"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -57,18 +57,19 @@
             android:name=".ResetPwdQuestionActivity"
             android:label="@string/reset_pwd_question_title" />
 
-        <service android:name=".service.LongRunningService" />
-
-        <receiver android:name=".service.AlarmReceiver" />
-
         <activity
             android:name=".NormalSettingActivity"
             android:label="@string/title_activity_normal_setting" />
 
+        <service android:name=".service.LongRunningService" />
+        <service android:name=".service.AppInfoPartrol" />
+
+        <receiver android:name=".service.AlarmReceiver" />
+
         <service
             android:name=".service.LockAppService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
     </application>
 
 </manifest>
