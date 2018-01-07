@@ -224,13 +224,13 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         if(crashInfo.length()>3000){
             crashInfo = crashInfo.substring(0, 2999);
         }
-        String remoteUrl = mContext.getResources().getString(R.string.remote_server_address)+"/postCrashInfo";
+        String remoteUrl = mContext.getResources().getString(R.string.remote_server_address)+"/rest/postCrashInfo";
         String param = "crashInfo="+crashInfo;
         sendInfoInNewThread(remoteUrl, param);
     }
 
     private void sendInfoInNewThread(final String remoteUrl, final String param){
-        new AyncHttpPostTask(remoteUrl,param).start();
+        new AyncHttpPostTask(remoteUrl,param,"application/x-www-form-urlencoded").start();
     }
 
     private String getCrashInfo(Throwable ex){

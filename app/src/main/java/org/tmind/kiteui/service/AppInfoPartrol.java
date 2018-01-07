@@ -9,7 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
 import android.os.SystemClock;
 
+import org.tmind.kiteui.R;
 import org.tmind.kiteui.model.PackageInfoModel;
+import org.tmind.kiteui.utils.AyncHttpPostTask;
+import org.tmind.kiteui.utils.AyncRefreshApInfoTask;
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.LogUtil;
 
@@ -22,7 +25,7 @@ public class AppInfoPartrol extends Service {
     private static final String TAG = "UpdateAppInfoService.class";
     private final static String emergencePhoneTable = "emergence_phone_table";
 
-
+    private volatile boolean sendFlag = false;
     private SQLiteDatabase db;
 
     @Override
@@ -40,11 +43,24 @@ public class AppInfoPartrol extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                LogUtil.d("UpdateAppInfoService", getAppInfoStr());
+                if(sendFlag){
+                    return;
+                }
+                sendFlag = true;
+                if(sendFlag) {
+                    String remoteUrl = getApplicationContext().getResources().getString(R.string.remote_server_address) + "/rest/appInfo";
+                    String param = "appInfo=" + getAppInfoStr();
+                    new AyncHttpPostTask(remoteUrl, param, "application/x-www-form-urlencoded").start();
+                    LogUtil.d("UpdateAppInfoService", getAppInfoStr());
+                    String refreshUrl = getApplicationContext().getResources().getString(R.string.remote_server_address) + "/rest/retreiveAppInfo/" + getEmergencePhoneNo();
+                    //update
+                    new AyncRefreshApInfoTask(refreshUrl, db).start();
+                }
+                sendFlag = false;
             }
         }).start();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int anHour =   1000; // 这是一小时的毫秒数
+        int anHour =   1000; // 这是10 mins的毫秒数
         long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
         Intent i = new Intent(this, AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);

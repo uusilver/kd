@@ -88,7 +88,6 @@ public class MainActivity extends Activity {
         startService(lockAppService);
 
         appinfoPartrol = new Intent(this, AppInfoPartrol.class);
-        startService(appinfoPartrol);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         //检查数据库 & 表
@@ -118,6 +117,8 @@ public class MainActivity extends Activity {
         stopService(lockAppService);
         startService(lockAppService);
 
+        if(appinfoPartrol == null)
+            appinfoPartrol = new Intent(this, AppInfoPartrol.class);
         stopService(appinfoPartrol);
         startService(appinfoPartrol);
         super.onResume();
