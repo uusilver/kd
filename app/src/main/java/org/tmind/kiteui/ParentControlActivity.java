@@ -209,7 +209,7 @@ public class ParentControlActivity extends AppCompatActivity {
         }
         //insert into database if new
         for (PackageInfoModel model : realArray) {
-            if (!model.isOldAppFlag()) {
+            if (!model.isOldAppFlag() && isAppNotExist(model.getPkg())) {
                 String insertSql = "insert into application_control_table (application_name, pkg, use_flag, start_time_hour, start_time_minute, end_time_hour, end_time_minute, system_flag) VALUES (?,?,?,?,?,?,?,?)";
                 db.execSQL(insertSql, new Object[]{model.getApplicationName(), model.getPkg(), model.getAllowFlag(), model.getStartTimeHour(), model.getStartTimeMinute(), model.getEndTimeHour(), model.getEndTimeMinute(), model.getSystemFlag()});
             }
@@ -326,6 +326,7 @@ public class ParentControlActivity extends AppCompatActivity {
                         realArray.get(position).setStartTimeHour(selectedStartTimeHour);
                         db.execSQL("update application_control_table set start_time_hour='" + selectedStartTimeHour + "' where application_name='" + realArray.get(position).getApplicationName() + "'");
                         refreshCache();
+                        updateRefreshTable();
                     }
 
                     @Override
@@ -341,6 +342,7 @@ public class ParentControlActivity extends AppCompatActivity {
                         realArray.get(position).setStartTimeMinute(selectedStartMinute);
                         db.execSQL("update application_control_table set start_time_minute='" + selectedStartMinute + "' where application_name='" + realArray.get(position).getApplicationName() + "'");
                         refreshCache();
+                        updateRefreshTable();
                     }
 
                     @Override
@@ -357,6 +359,7 @@ public class ParentControlActivity extends AppCompatActivity {
                         realArray.get(position).setEndTimeHour(selectEndTimeHour);
                         db.execSQL("update application_control_table set end_time_hour='" + selectEndTimeHour + "' where application_name='" + realArray.get(position).getApplicationName() + "'");
                         refreshCache();
+                        updateRefreshTable();
                     }
 
                     @Override
@@ -373,6 +376,7 @@ public class ParentControlActivity extends AppCompatActivity {
                         realArray.get(position).setEndTimeMinute(selectedEndTimeMinute);
                         db.execSQL("update application_control_table set end_time_minute='" + selectedEndTimeMinute + "' where application_name='" + realArray.get(position).getApplicationName() + "'");
                         refreshCache();
+                        updateRefreshTable();
                     }
 
                     @Override
@@ -393,6 +397,7 @@ public class ParentControlActivity extends AppCompatActivity {
                         }
                         db.execSQL("update application_control_table set use_flag='" + useFlag + "' where application_name='" + realArray.get(position).getApplicationName() + "'");
                         refreshCache();
+                        updateRefreshTable();
                     }
                 });
 
@@ -409,6 +414,7 @@ public class ParentControlActivity extends AppCompatActivity {
                                         // delete app
                                         db.execSQL("delete from application_control_table where application_name='" + realArray.get(position).getApplicationName() + "'");
                                         refreshCache();
+                                        updateRefreshTable();
                                         Uri uri = Uri.parse("package:" + realArray.get(position).getPkg());
                                         Intent intent = new Intent(Intent.ACTION_DELETE, uri);
                                         context.startActivity(intent);
@@ -550,4 +556,16 @@ public class ParentControlActivity extends AppCompatActivity {
             Looper.loop();
         }
     }//end of thread
+
+    private void updateRefreshTable(){
+        db.execSQL("update app_control_table set refresh='1'");
+    }
+
+    private boolean isAppNotExist(String pkg){
+        Cursor cursor = db.rawQuery("select pkg from application_control_table where pkg=?", new String[]{pkg});
+        if(cursor.moveToNext()){
+            return false;
+        }
+        return true;
+    }
 }

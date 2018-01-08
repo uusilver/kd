@@ -44,6 +44,11 @@ public class CacheUtil {
         return true;
     }
 
+    public boolean cleanCache(){
+        androidLruCache = null;
+        return true;
+    }
+
     public PackageInfoModel get(String key){
         if(androidLruCache !=null){
             return (PackageInfoModel)androidLruCache.get(key);

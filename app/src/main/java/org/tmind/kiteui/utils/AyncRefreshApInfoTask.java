@@ -76,9 +76,13 @@ public class AyncRefreshApInfoTask extends Thread {
                             String endTimeHour = (appInfoStr[5]);
                             String endTimeMinute = (appInfoStr[6]);
                             db.execSQL("update application_control_table set use_flag=?, start_time_hour=?, start_time_minute=?, end_time_hour=?, end_time_minute=? where pkg=?", new String[]{userFlag, startTimeHour, startTimeMinute, endTimeHour, endTimeMinute, pkg});
+                            LogUtil.d(TAG, "*************** refresh app info successfully ******************");
                         }
+                        CacheUtil.getInstance().cleanCache();
+                    }else {
+                        LogUtil.d(TAG, "*************** no need to refresh ******************");
                     }
-                    LogUtil.d(TAG, "*************** refresh app info successfully ******************");
+
                 } else {
                     LogUtil.d(TAG, "------------------链接失败-----------------");
                 }

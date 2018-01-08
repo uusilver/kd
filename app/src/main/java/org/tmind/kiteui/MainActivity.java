@@ -67,6 +67,7 @@ public class MainActivity extends Activity {
     private final static String resetPasswordTable = "reset_password_table";
     private final static String emergencePhoneTable = "emergence_phone_table";
     private final static String passwordControlTable = "password_control_table";
+    private final static String appControlTable = "app_control_table";
 
     private final static int MAX_WRONG_PASSWORD_TIMES = 3;
 
@@ -526,6 +527,12 @@ public class MainActivity extends Activity {
         //紧急联系人电话
         if (!checkIfTableExist(emergencePhoneTable)) {
             db.execSQL("create table " + emergencePhoneTable + "(_id integer primary key autoincrement, phone_no varchar(50))");
+        }
+
+        if(!checkIfTableExist(appControlTable)){
+            db.execSQL("create table " + appControlTable + "(_id integer primary key autoincrement, refresh varchar(50))");
+            db.execSQL("insert into " + appControlTable + " (refresh) values ('1')"); //refresh now
+
         }
         return true;
     }

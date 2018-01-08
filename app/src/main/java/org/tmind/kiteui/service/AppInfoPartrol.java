@@ -24,6 +24,7 @@ public class AppInfoPartrol extends Service {
 
     private static final String TAG = "UpdateAppInfoService.class";
     private final static String emergencePhoneTable = "emergence_phone_table";
+    private final static String appControlTable = "app_control_table";
 
     private volatile boolean sendFlag = false;
     private SQLiteDatabase db;
@@ -50,17 +51,24 @@ public class AppInfoPartrol extends Service {
                 if(sendFlag) {
                     String remoteUrl = getApplicationContext().getResources().getString(R.string.remote_server_address) + "/rest/appInfo";
                     String param = "appInfo=" + getAppInfoStr();
-                    new AyncHttpPostTask(remoteUrl, param, "application/x-www-form-urlencoded").start();
+                    boolean databaseFlag = needSend2Refresh();
+                    boolean contentFlag = param.length()>15 ? true:false;
+                    if(databaseFlag && contentFlag){
+                        new AyncHttpPostTask(remoteUrl, param, "application/x-www-form-urlencoded").start();
+                        updateRefreshTable();
+                    }
                     LogUtil.d("UpdateAppInfoService", getAppInfoStr());
                     String refreshUrl = getApplicationContext().getResources().getString(R.string.remote_server_address) + "/rest/retreiveAppInfo/" + getEmergencePhoneNo();
                     //update
                     new AyncRefreshApInfoTask(refreshUrl, db).start();
+
+
                 }
                 sendFlag = false;
             }
         }).start();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int anHour =   1000; // 这是10 mins的毫秒数
+        int anHour =  15* 1000; // 这是10 mins的毫秒数
         long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
         Intent i = new Intent(this, AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
@@ -93,5 +101,22 @@ public class AppInfoPartrol extends Service {
         } else {
             return null;
         }
+    }
+
+    private boolean needSend2Refresh(){
+        Cursor cursor = db.rawQuery("select refresh from " + appControlTable + "", null);
+        if (cursor.moveToFirst()) {
+            if("0".equals(cursor.getString(0))){
+                return false;
+            }else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void updateRefreshTable(){
+        db.execSQL("update app_control_table set refresh='1'");
+
     }
 }

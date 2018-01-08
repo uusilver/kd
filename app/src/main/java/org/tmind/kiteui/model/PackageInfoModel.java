@@ -118,12 +118,12 @@ public class PackageInfoModel {
 
         PackageInfoModel that = (PackageInfoModel) o;
 
-        return applicationName != null ? applicationName.equals(that.applicationName) : that.applicationName == null;
+        return pkg != null ? pkg.equals(that.pkg) : that.pkg == null;
 
     }
 
     @Override
     public int hashCode() {
-        return applicationName != null ? applicationName.hashCode() : 0;
+        return pkg != null ? pkg.hashCode() : 0;
     }
 }
