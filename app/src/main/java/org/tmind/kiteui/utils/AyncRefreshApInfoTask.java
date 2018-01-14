@@ -31,6 +31,7 @@ public class AyncRefreshApInfoTask extends Thread {
     public synchronized void run() {
             try {
                 // 根据地址创建URL对象(网络访问的url)
+                LogUtil.d(TAG, "Access url:"+accessAdr);
                 URL url = new URL(accessAdr);
                 // url.openConnection()打开网络链接
                 HttpURLConnection urlConnection = (HttpURLConnection) url
@@ -79,6 +80,7 @@ public class AyncRefreshApInfoTask extends Thread {
                             LogUtil.d(TAG, "*************** refresh app info successfully ******************");
                         }
                         CacheUtil.getInstance().cleanCache();
+                        LogUtil.d(TAG, "*************** clean the cache ******************");
                     }else {
                         LogUtil.d(TAG, "*************** no need to refresh ******************");
                     }

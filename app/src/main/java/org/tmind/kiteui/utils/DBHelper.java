@@ -15,15 +15,23 @@ public class DBHelper{
 
     private Context context;
 
+    private volatile static SQLiteDatabase instance = null;
 
     //必须要有构造函数
-    public DBHelper(Context context) {
-        super();
-        this.context = context;
+    private DBHelper() {
     }
 
-    public SQLiteDatabase getDbInstance(){
-        return SQLiteDatabase.openOrCreateDatabase(context.getFilesDir().getAbsoluteFile()+"/kid-ui.db3", null);
+    public static SQLiteDatabase getDbInstance(Context context){
+        if(instance != null){//懒汉式
+        }else{
+            //创建实例之前可能会有一些准备性的耗时工作
+            synchronized (DBHelper.class) {
+                if(instance == null){//二次检查
+                    instance = SQLiteDatabase.openOrCreateDatabase(context.getFilesDir().getAbsoluteFile()+"/kid-ui.db3", null);
+                }
+            }
+        }
+        return instance;
     }
 
 

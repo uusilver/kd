@@ -64,7 +64,7 @@ public class LockAppService extends Service {
         checkFlag = true;
         initBackThread();
         mCheckAppHandler.sendEmptyMessage(MSG_UPDATE_INFO);
-        db = new DBHelper(getApplicationContext()).getDbInstance();
+        db = DBHelper.getDbInstance(getApplicationContext());
         super.onCreate();
     }
 
@@ -172,11 +172,13 @@ public class LockAppService extends Service {
     private boolean isTopActivityNeed2Stop(String topActivity) {
         CacheUtil instance = CacheUtil.getInstance();
         if (instance.isCacheNull()) {
+            LogUtil.d(TAG, "Cache is null, then refresh");
             refreshCache(instance);
         }
         PackageInfoModel model = instance.get(topActivity);
         if (model != null) {
             //系统应用不停止
+            LogUtil.d(TAG,"Current Application system flag:"+model.getSystemFlag());
             if (model.getSystemFlag() != null && "true".equals(model.getSystemFlag())) {
                 return false;
             }
@@ -186,6 +188,7 @@ public class LockAppService extends Service {
             String endTimeMinute = model.getEndTimeMinute();
             String tS = startTimeHour.split("\\:")[0] + ":" + startTimeMinute;
             String tE = endTimeHour.split("\\:")[0] + ":" + endTimeMinute;
+            LogUtil.d("TAG","App avaiable time: "+tS+"---"+tE);
             try {
 
                 //可运行状态时间内，不停止

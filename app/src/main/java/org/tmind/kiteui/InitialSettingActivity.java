@@ -24,8 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 public class InitialSettingActivity extends AppCompatActivity {
@@ -135,7 +133,7 @@ public class InitialSettingActivity extends AppCompatActivity {
                     String remoteServerAddr = getResources().getString(R.string.remote_server_address);
                     String url = remoteServerAddr + "/rest/regist/" + send2RemoteStr;
                     new AyncHttpTask().execute(url);
-                    SQLiteDatabase db = new DBHelper(context).getDbInstance();
+                    SQLiteDatabase db = DBHelper.getDbInstance(context);
                     //insert
                     String insertPwd = "INSERT INTO parent_control_password_table (parent_password, password_type) VALUES ('" + newPwdStr + "', 'pwd')";
                     db.execSQL(insertPwd);

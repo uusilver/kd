@@ -21,14 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.tmind.kiteui.model.AppBoxItemModel;
-import org.tmind.kiteui.service.LongRunningService;
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.PhoneUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class AppBoxActivity extends AppCompatActivity {
@@ -45,7 +43,7 @@ public class AppBoxActivity extends AppCompatActivity {
         setContentView(R.layout.activity_app_box);
         context = this;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        db = new DBHelper(context).getDbInstance();
+        db = DBHelper.getDbInstance(context);
         appBoxItems = new ArrayList<>();
         //加载app应用。
         loadApps();
@@ -61,8 +59,8 @@ public class AppBoxActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 break;
@@ -76,11 +74,13 @@ public class AppBoxActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             AppBoxItemModel model = appBoxItems.get(i);
-            String tS = model.getStartTimeHour().split("\\:")[0]+":"+model.getStartTimeMinute();
-            String tE = model.getEndTimeHour().split("\\:")[0]+":"+model.getEndTimeMinute();
+            //check real time
+            List<String> timeList = getStartEndTime(model.getPkg());
+            String tS = timeList.get(0);
+            String tE = timeList.get(1);
             try {
                 //该应用的包名
-                if(PhoneUtil.isApplicationAvaiableTimeInZone(PhoneUtil.getTimeHHMM2Long(tS),PhoneUtil.getTimeHHMM2Long(tE),PhoneUtil.getCurrentTime())){
+                if (PhoneUtil.isApplicationAvaiableTimeInZone(PhoneUtil.getTimeHHMM2Long(tS), PhoneUtil.getTimeHHMM2Long(tE), PhoneUtil.getCurrentTime())) {
                     //
                     String pkg = model.getPkg();
                     //应用的主activity类
@@ -100,8 +100,8 @@ public class AppBoxActivity extends AppCompatActivity {
                     startActivity(intent);
                     //
 
-                }else {
-                    Toast.makeText(context, R.string.app_running_not_in_time,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(context, R.string.app_running_not_in_time, Toast.LENGTH_LONG).show();
                 }
 
             } catch (ParseException e) {
@@ -112,9 +112,7 @@ public class AppBoxActivity extends AppCompatActivity {
     };
 
     private static final String formatStr = "HH:mm";
-    private static SimpleDateFormat sdf=new SimpleDateFormat(formatStr);
-
-
+    private static SimpleDateFormat sdf = new SimpleDateFormat(formatStr);
 
 
     private List<ResolveInfo> apps;
@@ -124,7 +122,7 @@ public class AppBoxActivity extends AppCompatActivity {
     private void loadApps() {
         //load avalibables apps from database
         Cursor cursor = db.rawQuery("select application_name, start_time_hour, start_time_minute, end_time_hour, end_time_minute from application_control_table where use_flag='true'", null);
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             AppBoxItemModel model = new AppBoxItemModel();
             model.setApplicationName(cursor.getString(0));
             model.setStartTimeHour(cursor.getString(1));
@@ -133,15 +131,15 @@ public class AppBoxActivity extends AppCompatActivity {
             model.setEndTimeMinute(cursor.getString(4));
             appBoxItems.add(model);
         }
-
+        cursor.close();
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         new ImageView(AppBoxActivity.this);
 
         apps = getPackageManager().queryIntentActivities(mainIntent, 0);
-        for(AppBoxItemModel m : appBoxItems){
-            for(ResolveInfo info : apps){
-                if(m.getApplicationName().equals(info.loadLabel(getPackageManager()))){
+        for (AppBoxItemModel m : appBoxItems) {
+            for (ResolveInfo info : apps) {
+                if (m.getApplicationName().equals(info.loadLabel(getPackageManager()))) {
                     m.setPkg(info.activityInfo.packageName);
                     m.setMainCls(info.activityInfo.name);
                     m.setPackageImage(info.activityInfo.loadIcon(getPackageManager()));
@@ -151,46 +149,60 @@ public class AppBoxActivity extends AppCompatActivity {
         }
     }
 
-    public class AppsAdapter extends BaseAdapter {
-
-        public AppsAdapter() {
+    private List<String> getStartEndTime(String pkg) {
+        Cursor cursor = db.rawQuery("select application_name, start_time_hour, start_time_minute, end_time_hour, end_time_minute from application_control_table where use_flag='true' and pkg=?", new String[]{pkg});
+        List<String> list = new ArrayList<>(2);
+        if (cursor.moveToNext()) {
+            String tS = cursor.getString(1).split("\\:")[0] + ":" + cursor.getString(2);
+            String tE = cursor.getString(3).split("\\:")[0] + ":" + cursor.getString(4);
+            list.add(tS);
+            list.add(tE);
         }
-
-        @Override
-        public int getCount() {
-            return appBoxItems.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return appBoxItems.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            AppBoxItemModel model = appBoxItems.get(i);
-
-            View convertView = LayoutInflater.from(mContent).inflate(R.layout.app_box_item, null);
-            ImageView image = (ImageView) convertView.findViewById(R.id.image);
-            TextView text = (TextView) convertView.findViewById(R.id.text);
-            //设置文字和图片。
-            text.setText(model.getApplicationName());
-
-            image.setImageDrawable(model.getPackageImage());
-
-            // convertView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-            //使用dp进行参数设置。进行分辨率适配。
-            convertView.setLayoutParams(new GridView.LayoutParams(
-                    (int) mResources.getDimension(R.dimen.app_width),
-                    (int) mResources.getDimension(R.dimen.app_height)));
-            //返回一个图文混合。
-            return convertView;
-        }
+        cursor.close();
+        return list;
     }
+
+
+public class AppsAdapter extends BaseAdapter {
+
+    public AppsAdapter() {
+    }
+
+    @Override
+    public int getCount() {
+        return appBoxItems.size();
+    }
+
+    @Override
+    public Object getItem(int i) {
+        return appBoxItems.get(i);
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
+
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        AppBoxItemModel model = appBoxItems.get(i);
+
+        View convertView = LayoutInflater.from(mContent).inflate(R.layout.app_box_item, null);
+        ImageView image = (ImageView) convertView.findViewById(R.id.image);
+        TextView text = (TextView) convertView.findViewById(R.id.text);
+        //设置文字和图片。
+        text.setText(model.getApplicationName());
+
+        image.setImageDrawable(model.getPackageImage());
+
+        // convertView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        //使用dp进行参数设置。进行分辨率适配。
+        convertView.setLayoutParams(new GridView.LayoutParams(
+                (int) mResources.getDimension(R.dimen.app_width),
+                (int) mResources.getDimension(R.dimen.app_height)));
+        //返回一个图文混合。
+        return convertView;
+    }
+}
 }

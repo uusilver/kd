@@ -92,7 +92,7 @@ public class MainActivity extends Activity {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         //检查数据库 & 表
-        db = new DBHelper(this).getDbInstance();
+        db = DBHelper.getDbInstance(this);
         //检查表是否存在，不存在则创建，存在则返回
         createTableIfNotExist();
         //进行初始化设置

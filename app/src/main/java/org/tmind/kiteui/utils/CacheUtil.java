@@ -18,20 +18,14 @@ public class CacheUtil {
     private CacheUtil(){}
 
     public static CacheUtil getInstance() {
-        try {
-            if(instance != null){//懒汉式
-
-            }else{
-                //创建实例之前可能会有一些准备性的耗时工作
-                Thread.sleep(300);
-                synchronized (CacheUtil.class) {
-                    if(instance == null){//二次检查
-                        instance = new CacheUtil();
-                    }
+        if(instance != null){//懒汉式
+        }else{
+            //创建实例之前可能会有一些准备性的耗时工作
+            synchronized (CacheUtil.class) {
+                if(instance == null){//二次检查
+                    instance = new CacheUtil();
                 }
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
         return instance;
     }

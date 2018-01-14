@@ -1,7 +1,6 @@
 package org.tmind.kiteui;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -30,10 +29,8 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -46,12 +43,9 @@ import org.tmind.kiteui.model.RemoteUpdateModel;
 import org.tmind.kiteui.utils.CacheUtil;
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.LogUtil;
-import org.tmind.kiteui.utils.PhoneUtil;
-import org.tmind.kiteui.utils.TimeUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -102,7 +96,7 @@ public class ParentControlActivity extends AppCompatActivity {
         pd = ProgressDialog.show(context, "读取中...", "请等待", true, false);
         //inital db object
         stopService(MainActivity.lockAppService);
-        db = new DBHelper(context).getDbInstance();
+        db = DBHelper.getDbInstance(context);
         new Thread() {
             @Override
             public void run() {
@@ -183,7 +177,7 @@ public class ParentControlActivity extends AppCompatActivity {
         new ImageView(ParentControlActivity.this);
 
         mAllPackages = getPackageManager().queryIntentActivities(mainIntent, 0);
-
+        LogUtil.d(TAG, "package size:"+mAllPackages.size());
         for (int i = 0; i < mAllPackages.size(); i++) {
             ResolveInfo resolveInfo = mAllPackages.get(i);
             String tempPackageName = resolveInfo.loadLabel(packageManager).toString();
@@ -211,6 +205,7 @@ public class ParentControlActivity extends AppCompatActivity {
         for (PackageInfoModel model : realArray) {
             if (!model.isOldAppFlag() && isAppNotExist(model.getPkg())) {
                 String insertSql = "insert into application_control_table (application_name, pkg, use_flag, start_time_hour, start_time_minute, end_time_hour, end_time_minute, system_flag) VALUES (?,?,?,?,?,?,?,?)";
+                LogUtil.d(TAG, insertSql + model.getApplicationName() + model.getPkg());
                 db.execSQL(insertSql, new Object[]{model.getApplicationName(), model.getPkg(), model.getAllowFlag(), model.getStartTimeHour(), model.getStartTimeMinute(), model.getEndTimeHour(), model.getEndTimeMinute(), model.getSystemFlag()});
             }
         }

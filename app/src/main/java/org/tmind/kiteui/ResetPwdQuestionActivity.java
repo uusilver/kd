@@ -41,7 +41,7 @@ public class ResetPwdQuestionActivity extends AppCompatActivity {
 
         context = this;
 
-        db =  new DBHelper(context).getDbInstance();
+        db =  DBHelper.getDbInstance(context);
 
 
         Cursor cursor = db.rawQuery("select question, answer from reset_password_table",null);

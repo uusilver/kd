@@ -45,7 +45,7 @@ public class AyncHttpPostTask extends Thread {
                 con.setRequestProperty("Charset", "UTF-8");
                 //Charset 字符集
                 con.setRequestProperty("Content-type", contentTypeValue);
-
+                LogUtil.d(TAG, params);
                 //params应该是这样的样式=》option=getUserName&uName=jerehedu.没有问号？？？
                 OutputStream os = con.getOutputStream();
                 os.write(params.getBytes());

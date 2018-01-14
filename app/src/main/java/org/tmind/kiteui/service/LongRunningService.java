@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import org.tmind.kiteui.task.KillProcessTask;
 import org.tmind.kiteui.task.ShowAlertMsgTask;
@@ -39,7 +38,7 @@ public class LongRunningService extends Service {
 
     @Override
     public void onCreate(){
-        db = new DBHelper(getApplicationContext()).getDbInstance();
+        db = DBHelper.getDbInstance(getApplicationContext());
     }
 
     @Override

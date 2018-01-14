@@ -10,13 +10,10 @@ import android.os.IBinder;
 import android.os.SystemClock;
 
 import org.tmind.kiteui.R;
-import org.tmind.kiteui.model.PackageInfoModel;
 import org.tmind.kiteui.utils.AyncHttpPostTask;
 import org.tmind.kiteui.utils.AyncRefreshApInfoTask;
 import org.tmind.kiteui.utils.DBHelper;
 import org.tmind.kiteui.utils.LogUtil;
-
-import java.util.Date;
 
 public class AppInfoPartrol extends Service {
     public AppInfoPartrol() {
@@ -36,7 +33,7 @@ public class AppInfoPartrol extends Service {
 
     @Override
     public void onCreate(){
-        db = new DBHelper(getApplicationContext()).getDbInstance();
+        db = DBHelper.getDbInstance(getApplicationContext());
     }
 
     @Override
@@ -77,7 +74,7 @@ public class AppInfoPartrol extends Service {
     }
 
     private String getAppInfoStr() {
-        Cursor cursor = db.rawQuery("select application_name,pkg, use_flag,start_time_hour,start_time_minute,end_time_hour,end_time_minute,system_flag from application_control_table where use_flag=? or system_flag=?", new String[]{"true", "true"});
+        Cursor cursor = db.rawQuery("select application_name,pkg, use_flag,start_time_hour,start_time_minute,end_time_hour,end_time_minute,system_flag from application_control_table where system_flag=?", new String[]{"false"});
         StringBuilder result = new StringBuilder();
         result.append(getEmergencePhoneNo() +"|");
         while (cursor.moveToNext()) {

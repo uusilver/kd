@@ -88,7 +88,7 @@ public class ResetPwdActivity extends AppCompatActivity {
             }
 
             //
-            db = new DBHelper(context).getDbInstance();
+            db = DBHelper.getDbInstance(context);
             //insert
             String insertPwd = "update parent_control_password_table set parent_password = '"+newPwdStr+"' where password_type = 'pwd'";
             db.execSQL(insertPwd);
