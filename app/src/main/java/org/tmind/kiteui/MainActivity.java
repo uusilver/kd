@@ -100,6 +100,7 @@ public class MainActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         //check version,greater than M
+        context = this;
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
             boolean isAllGranted = checkPermissionAllGranted(permissions);
             if(!isAllGranted){
@@ -110,7 +111,6 @@ public class MainActivity extends Activity {
                 );
             }
         }
-        context = this;
         //start app lock service
         //
         lockAppService = new Intent(this, LockAppService.class);
