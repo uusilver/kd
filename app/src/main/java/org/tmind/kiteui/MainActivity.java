@@ -88,7 +88,8 @@ public class MainActivity extends Activity {
             Manifest.permission.CALL_PHONE,
             Manifest.permission.INTERNET,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.PACKAGE_USAGE_STATS
     };
 
     private static final int MY_PERMISSION_REQUEST_CODE = 10000;
@@ -542,7 +543,7 @@ public class MainActivity extends Activity {
      */
     private void openAppDetails() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("风筝桌面需要 “地理信息”，“存储卡”和 “电话”，请到 “应用信息 -> 权限” 中授予！");
+        builder.setMessage("风筝桌面需要 “地理信息”，“存储卡”“有权限查看应用使用信息” 和 “电话”，请到 “应用信息 -> 权限” 中授予！");
         builder.setPositiveButton("去手动授权", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

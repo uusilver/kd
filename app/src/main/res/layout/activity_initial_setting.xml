@@ -17,7 +17,6 @@
         android:id="@+id/resetpwd_question"
         android:layout_alignParentTop="true"
         android:hint="请输入您的密码重置问题"
-        android:text="a"
         android:maxLength="25"
         android:layout_alignLeft="@+id/resetpwd_edit_pwd_new"
         android:layout_alignStart="@+id/resetpwd_edit_pwd_new"
@@ -28,7 +27,6 @@
         android:drawableLeft="@android:drawable/ic_menu_add"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:text="a"
         android:inputType="text"
         android:ems="10"
         android:maxLength="25"
@@ -50,7 +48,6 @@
         android:ems="10"
         android:id="@+id/resetpwd_edit_pwd_old"
         android:hint="请输入您的密码"
-        android:text="a"
         android:layout_below="@+id/resetpwd_answer"
         android:layout_alignRight="@+id/resetpwd_question"
         android:layout_alignEnd="@+id/resetpwd_question"
@@ -67,7 +64,6 @@
         android:id="@+id/resetpwd_edit_pwd_new"
         android:layout_below="@+id/resetpwd_edit_pwd_old"
         android:layout_centerHorizontal="true"
-        android:text="a"
         android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         android:hint="请确认您的密码" />
 
@@ -87,7 +83,6 @@
         android:id="@+id/emergence_call_no"
         android:layout_below="@+id/show_pwd"
         android:layout_centerHorizontal="true"
-        android:text="13851483034"
         android:hint="请输入紧急联系电话" />
 
 

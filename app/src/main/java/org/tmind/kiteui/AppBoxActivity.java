@@ -1,5 +1,6 @@
 package org.tmind.kiteui;
 
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -37,6 +40,19 @@ public class AppBoxActivity extends AppCompatActivity {
     private List<AppBoxItemModel> appBoxItems;
     private SQLiteDatabase db;
 
+    //Progress dialog
+    ProgressDialog pd;
+
+    private Handler handler = new Handler() {
+        @Override
+        //当有消息发送出来的时候就执行Handler的这个方法
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            //只要执行到这里就关闭对话框
+            pd.dismiss();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,17 +62,35 @@ public class AppBoxActivity extends AppCompatActivity {
         db = DBHelper.getDbInstance(context);
         appBoxItems = new ArrayList<>();
         //加载app应用。
-        loadApps();
-        GridView gridView = (GridView) findViewById(R.id.apps_list);
-        //设置默认适配器。
-        mContent = getApplicationContext();
-        mResources = getResources();
-        gridView.setAdapter(new AppsAdapter());
-
-        //
-
-        gridView.setOnItemClickListener(clickListener);
+        //call progress dialog when time cosum opertaion run
+        pd = ProgressDialog.show(context, "读取中...", "请等待", true, false);
+        new Thread() {
+            @Override
+            public void run() {
+                loadApps();
+                handler.post(setGridView);
+                handler.sendEmptyMessage(0);
+            }
+        }.start();
     }
+
+    // 构建Runnable对象，在runnable中更新界面
+    Runnable setGridView = new Runnable() {
+        @Override
+        public void run() {
+            //更新界面
+            GridView gridView = (GridView) findViewById(R.id.apps_list);
+            //设置默认适配器。
+            mContent = getApplicationContext();
+            mResources = getResources();
+            gridView.setAdapter(new AppsAdapter());
+
+            //
+
+            gridView.setOnItemClickListener(clickListener);
+        }
+
+    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
