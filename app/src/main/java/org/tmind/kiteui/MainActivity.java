@@ -1,11 +1,13 @@
 package org.tmind.kiteui;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Criteria;
@@ -18,6 +20,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.view.View;
@@ -77,11 +81,35 @@ public class MainActivity extends Activity {
 
     public static Intent appinfoPartrol;
 
+    private String[] permissions = {
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CALL_PHONE,
+            Manifest.permission.INTERNET,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
+
+    private static final int MY_PERMISSION_REQUEST_CODE = 10000;
+    private AlertDialog permissionDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        //check version,greater than M
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
+            boolean isAllGranted = checkPermissionAllGranted(permissions);
+            if(!isAllGranted){
+                ActivityCompat.requestPermissions(
+                        this,
+                        permissions,
+                        MY_PERMISSION_REQUEST_CODE
+                );
+            }
+        }
         context = this;
         //start app lock service
         //
@@ -100,7 +128,7 @@ public class MainActivity extends Activity {
             route2Activity(InitialSettingActivity.class);
         }
 
-        if(PhoneUtil.isFirstStart(context)){
+        if (PhoneUtil.isFirstStart(context)) {
             openSettingPreviledge();
         }
         //初始化整个UI
@@ -110,7 +138,7 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         if (ifNeedGotoInitActivity()) {
             route2Activity(InitialSettingActivity.class);
         }
@@ -118,19 +146,21 @@ public class MainActivity extends Activity {
         stopService(lockAppService);
         startService(lockAppService);
 
-        if(appinfoPartrol == null)
+        if (appinfoPartrol == null)
             appinfoPartrol = new Intent(this, AppInfoPartrol.class);
         stopService(appinfoPartrol);
         startService(appinfoPartrol);
         super.onResume();
     }
+
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         stopService(lockAppService);
         super.onDestroy();
     }
 
     //初始化UI桌面图标，名称和功能
+
     /**
      * @see res/arrays.xml
      */
@@ -251,7 +281,7 @@ public class MainActivity extends Activity {
         parenetControllItem.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-               route2Activity(NormalSettingActivity.class);
+                route2Activity(NormalSettingActivity.class);
             }
         });
         parenetControllItem.setOnLongClickListener(new View.OnLongClickListener() {
@@ -263,10 +293,10 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void initColor(){
+    private void initColor() {
         //获得颜色代码, 0 -> pink, 1 -> blue, 2 -> red
         int currentThemeValue = sharedPreferences.getInt("current_theme", 1);
-        if(currentThemeValue == 0){
+        if (currentThemeValue == 0) {
             mertoContent.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_bkg));
             telephoneItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_telephoneItem));
             smsItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_smsItem));
@@ -277,7 +307,7 @@ public class MainActivity extends Activity {
             appBox.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_appBox));
             parenetControllItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_pink_parenetControllItem));
         }
-        if(currentThemeValue == 1){
+        if (currentThemeValue == 1) {
             mertoContent.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_bkg));
             telephoneItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_telephoneItem));
             smsItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_smsItem));
@@ -288,7 +318,7 @@ public class MainActivity extends Activity {
             appBox.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_appBox));
             parenetControllItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_blue_parenetControllItem));
         }
-        if(currentThemeValue == 2){
+        if (currentThemeValue == 2) {
             mertoContent.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_bkg));
             telephoneItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_telephoneItem));
             smsItem.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_red_smsItem));
@@ -457,12 +487,77 @@ public class MainActivity extends Activity {
         builder.show();
     }
 
-    private void openSettingPreviledge(){
+    private void openSettingPreviledge() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
+    }
+
+    /**
+     * 检查是否拥有指定的所有权限
+     */
+    private boolean checkPermissionAllGranted(String[] permissions){
+        for(String permisson : permissions){
+            if(ContextCompat.checkSelfPermission(context, permisson) != PackageManager.PERMISSION_GRANTED){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 第 3 步: 申请权限结果返回处理
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == MY_PERMISSION_REQUEST_CODE) {
+            boolean isAllGranted = true;
+
+            // 判断是否所有的权限都已经授予了
+            for (int grant : grantResults) {
+                if (grant != PackageManager.PERMISSION_GRANTED) {
+                    isAllGranted = false;
+                    break;
+                }
+            }
+
+            if (isAllGranted) {
+                // 如果所有的权限都授予了, 则执行备份代码
+                //TODO
+
+            } else {
+                // 弹出对话框告诉用户需要权限的原因, 并引导用户去应用权限管理中手动打开权限按钮
+                //TODO
+                openAppDetails();
+            }
+        }
+    }
+
+    /**
+     * 打开 APP 的详情设置
+     */
+    private void openAppDetails() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("风筝桌面需要 “地理信息”，“存储卡”和 “电话”，请到 “应用信息 -> 权限” 中授予！");
+        builder.setPositiveButton("去手动授权", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                startActivity(intent);
+            }
+        });
+        builder.setNegativeButton("取消", null);
+        builder.show();
     }
 
     /**
@@ -529,7 +624,7 @@ public class MainActivity extends Activity {
             db.execSQL("create table " + emergencePhoneTable + "(_id integer primary key autoincrement, phone_no varchar(50))");
         }
 
-        if(!checkIfTableExist(appControlTable)){
+        if (!checkIfTableExist(appControlTable)) {
             db.execSQL("create table " + appControlTable + "(_id integer primary key autoincrement, refresh varchar(50))");
             db.execSQL("insert into " + appControlTable + " (refresh) values ('1')"); //refresh now
 

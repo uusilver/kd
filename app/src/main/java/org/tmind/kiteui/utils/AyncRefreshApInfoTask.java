@@ -79,6 +79,8 @@ public class AyncRefreshApInfoTask extends Thread {
                             db.execSQL("update application_control_table set use_flag=?, start_time_hour=?, start_time_minute=?, end_time_hour=?, end_time_minute=? where pkg=?", new String[]{userFlag, startTimeHour, startTimeMinute, endTimeHour, endTimeMinute, pkg});
                             LogUtil.d(TAG, "*************** refresh app info successfully ******************");
                         }
+                        //no need to refresh to remote server
+                        db.execSQL("update app_control_table set refresh='0'");
                         CacheUtil.getInstance().cleanCache();
                         LogUtil.d(TAG, "*************** clean the cache ******************");
                     }else {
